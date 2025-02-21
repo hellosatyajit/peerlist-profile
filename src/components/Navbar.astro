@@ -1,0 +1,48 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  {
+    path: "/",
+    label: "Resume",
+  },
+  {
+    path: "/work",
+    label: "Work",
+  },
+  {
+    path: "/collections",
+    label: "Collections",
+  },
+];
+---
+
+<div class="flex justify-between sticky top-0 z-[6]">
+  <div class="w-full">
+    <div class="bg-gray-00 mr-[1px] sm:px-6 px-4">
+      <div class="flex items-center border-b border-border bg-gray-00">
+        <ul
+          class="flex items-center text-sm mx-auto gap-6 overflow-x-auto z-6 sticky"
+          style="z-index:5"
+        >
+          {
+            navItems.map((item) => (
+              <li class="flex items-center">
+                <a
+                  href={item.path}
+                  class={`flex whitespace-nowrap text-center items-center justify-between py-2.5 text-xs transition-all ease-in duration-75 !rounded-none font-semibold border-b-2 uppercase ${
+                    currentPath === item.path
+                      ? "text-green-300 border-green-300"
+                      : "hover:border-gray-400 text-gray-1k border-transparent"
+                  }`}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

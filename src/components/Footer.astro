@@ -1,0 +1,83 @@
+---
+import type { PeerlistData } from "../utils/peerlist";
+import {
+  TwitterIcon,
+  ProductHuntIcon,
+  InstagramIcon,
+  LinkedInIcon,
+  PeerlistIcon,
+} from "../assets/icons";
+
+const { user }: { user: PeerlistData } = Astro.props as { user: PeerlistData };
+
+const socialIcons = {
+  Twitter: TwitterIcon,
+  ProductHunt: ProductHuntIcon,
+  Instagram: InstagramIcon,
+  LinkedIn: LinkedInIcon,
+};
+
+const currentYear = new Date().getFullYear();
+---
+
+<div class="py-14 border-t border-border mx-4 sm:mx-6">
+  <div class="flex gap-2 items-center justify-center flex-shrink-0">
+    <a
+      href={`https://peerlist.io/${user.profileHandle}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="px-1"
+    >
+      <PeerlistIcon class="w-5 h-5" />
+      <span class="sr-only">Peerlist</span>
+    </a>
+    {
+      Object.entries(user.socialLinks).map(([platform, url]) => {
+        const Icon = socialIcons[platform as keyof typeof socialIcons];
+        return (
+          <a href={url} target="_blank" rel="noopener noreferrer" class="px-1">
+            <Icon class="w-5 h-5" />
+            <span class="sr-only">{platform}</span>
+          </a>
+        );
+      })
+    }
+  </div>
+  <div class="flex sm:flex-row flex-col items-center justify-center mt-6">
+    <div class="flex items-center justify-center">
+      <span class="text-gray-500 font-normal text-xs">© {currentYear}</span>
+      <a
+        target="_blank"
+        class="flex"
+        href={`https://peerlist.io/${user.profileHandle}`}
+      >
+        <img
+          src={user.profilePicture}
+          alt={user.displayName}
+          class="h-4 w-4 rounded-full bg-cover bg-center ml-2 mr-1"
+        />
+        <span class="text-gray-1k hover:underline font-normal text-xs">
+          {user.displayName}
+        </span>
+      </a>
+    </div>
+    <div class="flex items-center justify-center sm:mt-0 mt-2">
+      <span class="text-gray-500 mx-2 font-normal text-xs sm:block hidden">
+        •
+      </span>
+      <span class="text-gray-500 font-normal text-xs">Powered by</span>
+      <a
+        target="_blank"
+        class="flex"
+        rel="nofollow noreferrer ugc"
+        title="Peerlist Link"
+        href="https://peerlist.io/"
+      >
+        <PeerlistIcon />
+        <span class="text-gray-1k hover:underline font-normal text-xs">
+          Peerlist
+        </span>
+      </a>
+    </div>
+  </div>
+</div>

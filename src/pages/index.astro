@@ -1,11 +1,222 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import { fetchUserResume } from "../utils/peerlist";
+import type { PeerlistData } from "../utils/peerlist";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const user = (await fetchUserResume("hellosatyajit")) as PeerlistData;
+
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const capitalize = (str: string) => {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+const calculateTotalDuration = (dateRanges: { startDate: string; endDate: string }[]) => {
+  let totalMonths = 0;
+
+  dateRanges.forEach(({ startDate, endDate }) => {
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : new Date();
+
+    const yearsDiff = end.getFullYear() - start.getFullYear();
+    const monthsDiff = end.getMonth() - start.getMonth();
+
+    totalMonths += yearsDiff * 12 + monthsDiff;
+  });
+
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+
+  return `${years} year${years !== 1 ? 's' : ''} ${months} month${months !== 1 ? 's' : ''}`;
+}
 ---
 
-<Layout>
-	<Welcome />
+<Layout user={user}>
+  <div class="mb-10 sm:pb-0 pb-4 sm:mb-20">
+    <div class="flex items-center justify-between">
+      <div class="w-full flex items-center justify-between">
+        <p class="text-gray-1k font-semibold text-base">Experience</p>
+        <span
+          class="text-xs font-semibold leading-4 px-2 py-0.5 rounded-md h-5 inline-flex items-center justify-center text-center w-fit text-gray-700 bg-gray-100 dark:bg-gray-50 ml-2 sm:ml-4"
+        >
+          {calculateTotalDuration(user.experience)}
+        </span>
+      </div>
+    </div>
+    <div class="mt-6">
+      {
+        user.experience
+          .sort(
+            (a, b) =>
+              new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+          )
+          .map((experience) => (
+            <div class="group">
+              <div class="w-full flex justify-between">
+                <div class="flex items-center gap-2 overflow-hidden">
+                  <span class="max-w-fit">
+                    <a
+                      class="group/company"
+                      target="_blank"
+                      rel="noreferrer nofollow ugc"
+                      title="Statshub"
+                      href="https://peerlist.io/company/statshub"
+                    >
+                      <div class="flex items-center gap-2 overflow-hidden">
+                        <img
+                          alt="Statshub"
+                          loading="lazy"
+                          width="24"
+                          height="24"
+                          decoding="async"
+                          data-nimg="1"
+                          class="rounded-full bg-center bg-no-repeat bg-cover bg-gray-00 flex justify-center items-center object-contain hover:opacity-90 transition-opacity border border-border flex-grow"
+                          src={
+                            experience.logo ??
+                            "https://dqy38fnwh4fqs.cloudfront.net/website/companyempty.png"
+                          }
+                          style="color: transparent; width: 24px; height: 24px;"
+                        />
+                        <p class="text-gray-1k font-normal text-sm group-hover/company:underline truncate">
+                          {experience.organizationName}
+                        </p>
+                      </div>
+                    </a>
+                  </span>
+                </div>
+              </div>
+              <div class="pl-8 relative w-full transition-colors duration-200 flex flex-col items-center pb-6">
+                <div class="absolute w-0.5 bg-green-300 h-[10px] left-[11px]" />
+                <div class="w-full flex relative pt-2">
+                  <div class="w-4 h-3 border-l-2 border-b-2 rounded-bl-lg absolute -left-[21px] border-green-300" />
+                  <div class="w-full flex">
+                    <div class="group w-full duration-300 ease-in-out rounded-2xl outline-none transition-shadow group b-0">
+                      <label
+                        for={experience.id}
+                        class="w-full group flex items-center relative text-left cursor-pointer p-0"
+                      >
+                        <div class="w-full flex flex-col gap-2">
+                          <div class="flex items-center justify-between w-full">
+                            <div class="w-full flex flex-col gap-1">
+                              <div class="flex items-center gap-2">
+                                <p class="text-gray-1k font-semibold text-sm">
+                                  {experience.position}
+                                </p>
+                              </div>
+                              <p class="text-gray-500 font-normal text-xs">
+                                <strong>
+                                  {formatDate(experience.startDate)} -{" "}
+                                  {experience.endDate
+                                    ? formatDate(experience.endDate)
+                                    : "Present"}
+                                  <span class="font-normal capitalize">
+                                    •{" "}
+                                    {experience.location.city ??
+                                      capitalize(experience.location.country!)}
+                                  </span>
+                                  <span class="font-normal capitalize">
+                                    • {experience.jobType}
+                                  </span>
+                                </strong>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="absolute right-4 text-gray-400 group-hover:text-gray-1k w-6">
+                          <div class="group-hover:border-border justify-center shrink-0 flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 disabled:cursor-not-allowed gap-x-1 active:shadow-none text-xs leading-4 py-1 h-6 rounded-lg w-6 text-gray-1k bg-gray-00 border-transparent hover:border-border disabled:bg-gray-100 disabled:hover:border-transparent cursor-pointer">
+                            <span class="">
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M6 9L12 15L18 9"
+                                  stroke="currentColor"
+                                  stroke-width="1.5"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  vector-effect="non-scaling-stroke"
+                                />
+                              </svg>
+                            </span>
+                          </div>
+                        </div>
+                      </label>
+                      <input
+                        id={experience.id}
+                        type="checkbox"
+                        class="peer sr-only"
+                      />
+                      <div class="overflow-hidden h-0 peer-checked:overflow-scroll peer-checked:h-auto transition-[height] duration-300 ease-in-out hide-scrollbar">
+                        <div class="">
+                          <div
+                            class="break-words text-gray-1k text-gray leading-4 pt-2 sm:leading-6 text-xs sm:text-sm job-description cursor-pointer"
+                            role="none"
+                          >
+                            <ul
+                              class="list-disc break-word pl-0"
+                              set:html={experience.description}
+                            />
+                          </div>
+                          <div class="flex gap-2 pt-2 flex-wrap items-center overflow-x-scroll lg:overscroll-auto">
+                            {experience.skills.map((skill) => (
+                              <span class="text-xs font-medium leading-4 border border-border rounded-lg text-gray-1k inline-flex items-center justify-center gap-x-1 px-2 py-1 h-6 box-border hover:shadow-tag-hover transition-all ease-in-out select-none group/tag bg-gray-00">
+                                <span>{skill.name}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+      }
+    </div>
+  </div>
+  <div class="mb-10 sm:pb-0 pb-4 sm:mb-20">
+    <div class="flex items-center justify-between">
+      <div class="w-full flex items-center justify-between">
+        <p class="text-gray-1k font-semibold text-base">Education</p>
+      </div>
+    </div>
+    <div class="flex flex-col mt-6 sm:gap-6 gap-4">
+      {
+        user.education
+          .sort(
+            (a, b) =>
+              new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+          )
+          .map((education) => (
+            <div class="flex w-full justify-between items-start group gap-2">
+              <div class="w-full flex flex-col gap-1">
+                <div class="flex items-center md:justify-start w-full gap-1">
+                  <p class="text-gray-1k font-semibold text-sm capitalize">
+                    {education.organizationName}
+                  </p>
+                </div>
+                <p class="text-gray-1k font-normal text-xs">
+                  {education.title} - {education.major}
+                </p>
+                <p class="text-gray-500 font-normal text-xs">
+                  {formatDate(education.startDate)} -{" "}
+                  {formatDate(education.endDate)}
+                </p>
+                <div class="self-start block sm:hidden" />
+              </div>
+            </div>
+          ))
+      }
+    </div>
+  </div>
 </Layout>

@@ -1,22 +1,45 @@
+---
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Navbar from "../components/Navbar.astro";
+import "../styles/global.css";
+import type { PeerlistData } from "../utils/peerlist";
+const { user } = Astro.props as { user: PeerlistData };
+---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Satyajit - Peerlist</title>
+  </head>
+  <body>
+    <div class="bg-gray-00 w-full __className_6ac6f9 __variable_793c88">
+      <div>
+        <div class="relative">
+          <div class="max-w-screen-sm mx-auto bg-gray-00">
+            <Header user={user} />
+            <Navbar />
+            <div class="lg:py-10 pt-8 pb-10 w-full px-4 sm:px-6">
+              <slot />
+            </div>
+            <Footer user={user} />
+          </div>
+        </div>
+      </div>
+    </div>
+    <slot />
+  </body>
 </html>
 
 <style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+  }
 </style>

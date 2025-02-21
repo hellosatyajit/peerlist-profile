@@ -1,1 +1,63 @@
 @import "tailwindcss";
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&display=swap");
+
+@theme {
+  --color-green-300: rgb(0 169 64);
+  --color-gray-00: rgb(255 255 255);
+  --color-gray-25: rgb(248 249 251);
+  --color-gray-50: rgb(248 250 252);
+  --color-gray-100: rgb(241 245 249);
+  --color-gray-200: rgb(226 232 240);
+  --color-gray-300: rgb(203 213 225);
+  --color-gray-400: rgb(148 163 184);
+  --color-gray-500: rgb(100 116 139);
+  --color-gray-600: rgb(71 85 105);
+  --color-gray-700: rgb(51 65 85);
+  --color-gray-800: rgb(30 41 59);
+  --color-gray-900: rgb(15 23 42);
+  --color-gray-1k: rgb(13 13 13);
+  --color-border: var(--color-gray-200);
+  --shadow-5: 0px 1px 1px -0.5px rgba(0, 0, 0, 0.03),
+    0px 3px 3px -1.5px rgba(0, 0, 0, 0.03);
+  --shadow-10: 0px 3px 3px -1.5px rgba(0, 0, 0, 0.03),
+    0px 6px 6px -3px rgba(0, 0, 0, 0.03), 0px 12px 12px -6px rgba(0, 0, 0, 0.03);
+  --shadow-15: 0px 3px 3px -1.5px rgba(0, 0, 0, 0.08),
+    0px 6px 6px -3px rgba(0, 0, 0, 0.08), 0px 12px 12px -6px rgba(0, 0, 0, 0.08),
+    0px 24px 24px -12px rgba(0, 0, 0, 0.08);
+  --shadow-focus: 0px 0px 0px 4px #e1e4e880;
+  --chart-1: 47, 128, 237;
+
+  --rt-opacity: 1;
+  --rt-transition-show-delay: 0.3s;
+  --rt-transition-closing-delay: 0.3s;
+}
+
+* {
+  font-family: "Inter", serif;
+}
+
+.job-description ul {
+  margin-bottom: 1.5rem;
+  margin-left: 0.5rem;
+  list-style-type: disc;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: rgb(var(--gray-1k));
+}
+
+.job-description ul li p {
+  margin-bottom: 0;
+  line-height: 1.25rem;
+}
+
+.job-description p {
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.job-description p,
+.peerlist-blog p {
+  padding-bottom: 0;
+  color: rgb(var(--gray-1k));
+}
