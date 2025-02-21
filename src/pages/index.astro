@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { fetchUserResume } from "../utils/peerlist";
 import type { PeerlistData } from "../utils/peerlist";
 
-const user = (await fetchUserResume("hellosatyajit")) as PeerlistData;
+const user = (await fetchUserResume()) as PeerlistData;
 
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleDateString("en-US", {

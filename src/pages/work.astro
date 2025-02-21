@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import { fetchUserProfile } from "../utils/peerlist";
 import type { PeerlistData } from "../utils/peerlist";
 
-const user = (await fetchUserProfile("hellosatyajit")) as PeerlistData;
+const user = (await fetchUserProfile()) as PeerlistData;
 ---
 
 <Layout user={user}>

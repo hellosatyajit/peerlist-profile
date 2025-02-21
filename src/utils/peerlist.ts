@@ -1,3 +1,5 @@
+const USER_NAME = "hellosatyajit";
+
 export interface PeerlistData {
   follower: boolean;
   following: boolean;
@@ -197,8 +199,8 @@ export interface PeerlistData {
   };
 }
 
-async function fetchFromPeerlist(url: string): Promise<{ user: PeerlistData }> {
-  const response = await fetch(`https://peerlist.io/${url}`);
+async function fetchFromPeerlist(path: string): Promise<{ user: PeerlistData }> {
+  const response = await fetch(`https://peerlist.io/${USER_NAME}${path}`);
   const html = await response.text();
   const scriptDataMatch = html.match(
     /<script id="__NEXT_DATA__" type="application\/json">(.*?)<\/script>/s
@@ -216,15 +218,13 @@ async function fetchFromPeerlist(url: string): Promise<{ user: PeerlistData }> {
   return jsonData.props.pageProps;
 }
 
-export async function fetchUserProfile(
-  username: string
-): Promise<PeerlistData> {
-  const jsonData = await fetchFromPeerlist(username);
+export async function fetchUserProfile(): Promise<PeerlistData> {
+  const jsonData = await fetchFromPeerlist("/");
   return jsonData.user;
 }
 
-export async function fetchUserResume(username: string): Promise<PeerlistData> {
-  const jsonData = await fetchFromPeerlist(`${username}/resume`);
+export async function fetchUserResume(): Promise<PeerlistData> {
+  const jsonData = await fetchFromPeerlist("/resume");
 
   return jsonData.user;
 }
