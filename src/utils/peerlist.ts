@@ -228,3 +228,54 @@ export async function fetchUserResume(): Promise<PeerlistData> {
 
   return jsonData.user;
 }
+
+interface ProductHuntProject {
+  node: {
+    id: string;
+    name: string;
+    tagline: string;
+    thumbnail: {
+      url: string;
+    };
+    votesCount: number;
+    url: string;
+  };
+}
+
+export async function fetchProductHuntProjects(username?: string): Promise<ProductHuntProject[]> {
+  if (!username) {
+    return [];
+  }
+  const query = `
+    query {
+      user(username: "${username}") {
+        madePosts(first: 50) {
+          edges {
+            node {
+              id
+              name
+              tagline
+              thumbnail {
+                url
+              }
+              votesCount
+              url
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await fetch('https://api.producthunt.com/v2/api/graphql', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${import.meta.env.PRODUCT_HUNT_DEV_TOKEN}`,
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  const data = await response.json();
+  return data.data.user.madePosts.edges;
+}
