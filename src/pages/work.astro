@@ -9,7 +9,7 @@ const productHuntProjects = await fetchProductHuntProjects(
 );
 ---
 
-<Layout user={user}>
+<Layout title={`Work - ${user.displayName}`} path="work" user={user}>
   <div class="mb-20">
     <section id="projects">
       <div class="flex items-center justify-between">

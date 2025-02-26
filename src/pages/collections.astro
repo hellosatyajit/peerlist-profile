@@ -21,7 +21,7 @@ function formatDate(date: string) {
 }
 ---
 
-<Layout user={user}>
+<Layout title={`Collections - ${user.displayName}`} path="collections" user={user}>
   {
     user.collections.map((collection) => (
       <div class="mb-14">
@@ -268,7 +268,7 @@ function formatDate(date: string) {
         <p class="text-gray-00 font-normal text-sm">Link copied</p>
       </div>
     </div>
-    <button type="button" aria-label="close" class="ml-2 cursor-pointer" onclick="hideCopyToast();">
+    <button type="button" aria-label="close" class="ml-2 cursor-pointer" onclick="document.getElementById('copy-toast')?.classList.remove('flex!');">
       <svg
         width="15"
         height="15"
@@ -299,20 +299,13 @@ function formatDate(date: string) {
         `https://peerlist.io/${collectionId}/collections/${collectionId}`
       );
 
-      showCopyToast();
-    }
-
-    function showCopyToast() {
       const copyToast = document.getElementById("copy-toast");
+      
       copyToast?.classList.add("flex!");
+
       setTimeout(function () {
         copyToast?.classList.remove("flex!");
       }, 3000);
-    }
-
-    function hideCopyToast() {
-      const copyToast = document.getElementById("copy-toast");
-      copyToast?.classList.remove("flex!");
     }
 
     document.addEventListener("DOMContentLoaded", () => {

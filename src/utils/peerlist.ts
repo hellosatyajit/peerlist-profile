@@ -1,4 +1,5 @@
 const USER_NAME = "hellosatyajit";
+export const SITE_DOMAIN = import.meta.env.SITE_DOMAIN;
 
 export interface PeerlistData {
   follower: boolean;

@@ -4,7 +4,12 @@ import Header from "../components/Header.astro";
 import Navbar from "../components/Navbar.astro";
 import "../styles/global.css";
 import type { PeerlistData } from "../utils/peerlist";
-const { user } = Astro.props as { user: PeerlistData };
+import { SITE_DOMAIN } from "../utils/peerlist";
+const { title, path, user } = Astro.props as {
+  title: string;
+  path: string;
+  user: PeerlistData;
+};
 ---
 
 <!doctype html>
@@ -12,10 +17,50 @@ const { user } = Astro.props as { user: PeerlistData };
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href={user.profilePicture} />
     <meta name="generator" content={Astro.generator} />
-    <title>Satyajit - Peerlist</title>
+    <title>{title}</title>
+    <meta name="description" content={user.headline} />
+    <meta property="og:locale" content="en" />
+    <meta property="og:site_name" content={user.displayName} />
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content={user.headline} />
+    <meta property="og:site_name" content={user.displayName} />
+    <meta name="apple-mobile-web-app-title" content={user.displayName} />
+    <meta name="application-name" content={user.displayName} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:domain" content={SITE_DOMAIN} />
+    <meta property="twitter:url" content={SITE_DOMAIN} />
+    <meta name="twitter:description" content={user.headline} />
+    <meta
+      name="twitter:site"
+      content={user.socialLinks.Twitter?.split("/")[3]}
+    />
+    <meta
+      name="twitter:creator"
+      content={user.socialLinks.Twitter?.split("/")[3]}
+    />
+    <link rel="canonical" href={`${SITE_DOMAIN}/${path}`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="628" />
+    <meta name="robots" content="index,follow" />
+    <meta name="googlebot" content="index,follow" />
+    <link rel="icon" type="image/x-icon" href={user.profilePicture} />
+    <link rel="icon" href={user.profilePicture} />
+    <link rel="mask-icon" href={user.profilePicture} color="#00AA45" />
+    <link rel="shortcut icon" type="image/x-icon" href={user.profilePicture} />
+    <link rel="apple-touch-icon" href={user.profilePicture} />
+    <link rel="apple-touch-icon" sizes="152x152" href={user.profilePicture} />
+    <link rel="apple-touch-icon" sizes="180x180" href={user.profilePicture} />
+    <link rel="apple-touch-icon" sizes="167x167" href={user.profilePicture} />
+    <link rel="icon" sizes="192x192" href={user.profilePicture} />
+    <link rel="icon" sizes="128x128" href={user.profilePicture} />
+    <meta property="og:title" content={title} />
+    <meta name="twitter:title" content={title} />
+    <meta name="next-head-count" content="37" />
+    <meta name="theme-color" content="#27ae60" />
   </head>
+
   <body>
     <div class="bg-gray-00 w-full __className_6ac6f9 __variable_793c88">
       <div>
