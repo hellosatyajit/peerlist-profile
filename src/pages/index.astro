@@ -7,6 +7,7 @@ import { format, differenceInMonths, differenceInYears } from "date-fns";
 const user = (await fetchUserResume()) as PeerlistData;
 
 const capitalize = (str: string) => {
+  if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
@@ -38,7 +39,7 @@ const showJobDuration = (startDate: string, endDate?: string) => {
   const yearsDiff = differenceInYears(end, start);
   const monthsDiff = differenceInMonths(end, start);
 
-  return `(${yearsDiff > 0 ? `${yearsDiff} y ` : ""}${monthsDiff} m)`;
+  return `(${yearsDiff > 0 ? `${yearsDiff} yr, ` : ""}${monthsDiff} m)`;
 };
 ---
 
@@ -127,66 +128,81 @@ const showJobDuration = (startDate: string, endDate?: string) => {
                                     experience.endDate
                                   )}
                                 </span>
-                                <span class="font-normal capitalize">
-                                  •{" "}
-                                  {experience.location.city ??
-                                    capitalize(experience.location.country!)}
-                                </span>
-                                <span class="font-normal capitalize">
-                                  • {experience.jobType}
-                                </span>
+                                {(experience.location.city ||
+                                  experience.location.country) && (
+                                  <span class="font-normal capitalize">
+                                    •{" "}
+                                    {experience.location.city
+                                      ? `${experience.location.city}, `
+                                      : ""}
+                                    {capitalize(experience.location.country!)}
+                                  </span>
+                                )}
+                                {experience.jobType && (
+                                  <span class="font-normal capitalize">
+                                    • {experience.jobType}
+                                  </span>
+                                )}
                               </p>
                             </div>
                           </div>
                         </div>
-                        <div class="absolute right-4 text-gray-400 group-hover:text-gray-1k w-6">
-                          <div class="group-hover:border-border justify-center shrink-0 flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 disabled:cursor-not-allowed gap-x-1 active:shadow-none text-xs leading-4 py-1 h-6 rounded-lg w-6 text-gray-1k bg-gray-00 border-transparent hover:border-border disabled:bg-gray-100 disabled:hover:border-transparent cursor-pointer">
-                            <span class="">
-                              <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M6 9L12 15L18 9"
-                                  stroke="currentColor"
-                                  stroke-width="1.5"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                  vector-effect="non-scaling-stroke"
-                                />
-                              </svg>
-                            </span>
+                        {(experience.description ||
+                          experience.skills.length > 0) && (
+                          <div class="absolute right-4 text-gray-400 group-hover:text-gray-1k w-6">
+                            <div class="group-hover:border-border justify-center shrink-0 flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 disabled:cursor-not-allowed gap-x-1 active:shadow-none text-xs leading-4 py-1 h-6 rounded-lg w-6 text-gray-1k bg-gray-00 border-transparent hover:border-border disabled:bg-gray-100 disabled:hover:border-transparent cursor-pointer">
+                              <span class="">
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    d="M6 9L12 15L18 9"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    vector-effect="non-scaling-stroke"
+                                  />
+                                </svg>
+                              </span>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </label>
                       <input
                         id={experience.id}
                         type="checkbox"
                         class="peer sr-only"
                       />
-                      <div class="overflow-hidden h-0 peer-checked:overflow-scroll peer-checked:h-auto transition-[height] duration-300 ease-in-out hide-scrollbar">
-                        <div class="">
-                          <div
-                            class="break-words text-gray-1k text-gray leading-4 pt-2 sm:leading-6 text-xs sm:text-sm job-description cursor-pointer"
-                            role="none"
-                          >
-                            <ul
-                              class="list-disc break-word pl-0"
-                              set:html={experience.description}
-                            />
-                          </div>
-                          <div class="flex gap-2 pt-2 flex-wrap items-center overflow-x-scroll lg:overscroll-auto">
-                            {experience.skills.map((skill) => (
-                              <span class="text-xs font-medium leading-4 border border-border rounded-lg text-gray-1k inline-flex items-center justify-center gap-x-1 px-2 py-1 h-6 box-border hover:shadow-tag-hover transition-all ease-in-out select-none group/tag bg-gray-00">
-                                <span>{skill.name}</span>
-                              </span>
-                            ))}
+                      {(experience.description ||
+                        experience.skills.length > 0) && (
+                        <div class="overflow-hidden h-0 peer-checked:overflow-scroll peer-checked:h-auto transition-[height] duration-300 ease-in-out hide-scrollbar">
+                          <div class="">
+                            {experience.description && (
+                              <div
+                                class="break-words text-gray-1k text-gray leading-4 pt-2 sm:leading-6 text-xs sm:text-sm job-description cursor-pointer"
+                                role="none"
+                              >
+                                <ul
+                                  class="list-disc break-word pl-0"
+                                  set:html={experience.description}
+                                />
+                              </div>
+                            )}
+                            <div class="flex gap-2 pt-2 flex-wrap items-center overflow-x-scroll lg:overscroll-auto">
+                              {experience.skills.map((skill) => (
+                                <span class="text-xs font-medium leading-4 border border-border rounded-lg text-gray-1k inline-flex items-center justify-center gap-x-1 px-2 py-1 h-6 box-border hover:shadow-tag-hover transition-all ease-in-out select-none group/tag bg-gray-00">
+                                  <span>{skill.name}</span>
+                                </span>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>

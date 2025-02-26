@@ -94,8 +94,8 @@ const { user }: { user: PeerlistData } = Astro.props as { user: PeerlistData };
               <div class="w-20 h-20 rounded-full overflow-hidden">
                 <img
                   class="w-20 h-20 rounded-full bg-center bg-no-repeat bg-cover flex justify-center items-center object-cover hover:opacity-90 transition-opacity border-1 bg-gray-00"
-                  src="https://dqy38fnwh4fqs.cloudfront.net/UHGNLKKOPLP67E8CABGOOR6GNGBR/hgnlkkoplp67e8cabgoor6gngbr-profile.webp"
-                  alt="Satyajit Chaudhary"
+                  src={user.profilePicture}
+                  alt={user.displayName}
                   width="80"
                   height="80"
                 />
@@ -131,7 +131,7 @@ const { user }: { user: PeerlistData } = Astro.props as { user: PeerlistData };
         data-for="profile-verification-info"
         data-effect="solid"
         class="flex items-center cursor-default"
-        ><h1 class="font-semibold text-lg">Satyajit Chaudhary</h1><div
+        ><h1 class="font-semibold text-lg">{user.displayName}</h1><div
           class="pl-1 cursor-pointer"
         >
           {
@@ -237,8 +237,8 @@ const { user }: { user: PeerlistData } = Astro.props as { user: PeerlistData };
         ><a
           target="_blank"
           rel="noreferrer nofollow ugc"
-          title="https://satyajit.xyz/?ref=peerlist"
-          href="https://satyajit.xyz/?ref=peerlist"
+          title={user.website}
+          href={user.website}
           ><p class="text-gray-1k font-normal text-xs hover:underline">
             {user.website?.split("://")[1]}
           </p></a

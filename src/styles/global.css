@@ -65,6 +65,7 @@
 
 .paragraph-clamp,
 .paragraph-clamp1,
+.paragraph-clamp2,
 .paragraph-clamp4 {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -74,6 +75,10 @@
 
 .paragraph-clamp1 {
   -webkit-line-clamp: 1;
+}
+
+.paragraph-clamp2 {
+  -webkit-line-clamp: 2;
 }
 
 .paragraph-clamp4 {

@@ -169,7 +169,7 @@ function formatDate(date: string) {
                   ) : null}
                 </div>
                 <div class="relative sm:p-4 p-2 flex-1 flex justify-between h-full items-center">
-                  <p class="text-gray-1k font-semibold paragraph-clamp text-sm">
+                  <p class="text-gray-1k font-semibold paragraph-clamp2 text-sm">
                     {item.title}
                   </p>
                 </div>
@@ -189,7 +189,7 @@ function formatDate(date: string) {
                 tabindex="0"
               >
                 <div
-                  class={`overflow-hidden border-primaryBorder relative sm:w-[120px] sm:h-[120px] h-[100px] w-[100px] rounded-lg border border-gray-200 transition-shadow duration-200 ease-in-out group-hover/collectionItem:shadow-[0px_4px_16px_0px_rgba(33,33,33,0.15)] ${!item.image ? "bg-gray-900" : ""}`}
+                  class={`overflow-hidden border-border relative sm:w-[120px] sm:h-[120px] h-[100px] w-[100px] rounded-lg border transition-shadow duration-200 ease-in-out group-hover/collectionItem:shadow-[0px_4px_16px_0px_rgba(33,33,33,0.15)] ${!item.image ? "bg-gray-900" : ""}`}
                 >
                   {item.image ? (
                     <img
