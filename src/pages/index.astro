@@ -2,21 +2,17 @@
 import Layout from "../layouts/Layout.astro";
 import { fetchUserResume } from "../utils/peerlist";
 import type { PeerlistData } from "../utils/peerlist";
+import { format, differenceInMonths, differenceInYears } from "date-fns";
 
 const user = (await fetchUserResume()) as PeerlistData;
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    month: "short",
-    year: "numeric",
-  });
-};
 
 const capitalize = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-const calculateTotalDuration = (dateRanges: { startDate: string; endDate: string }[]) => {
+const calculateTotalDuration = (
+  dateRanges: { startDate: string; endDate: string }[]
+) => {
   let totalMonths = 0;
 
   dateRanges.forEach(({ startDate, endDate }) => {
@@ -32,8 +28,18 @@ const calculateTotalDuration = (dateRanges: { startDate: string; endDate: string
   const years = Math.floor(totalMonths / 12);
   const months = totalMonths % 12;
 
-  return `${years} year${years !== 1 ? 's' : ''} ${months} month${months !== 1 ? 's' : ''}`;
-}
+  return `${years} year${years !== 1 ? "s" : ""} ${months} month${months !== 1 ? "s" : ""}`;
+};
+
+const showJobDuration = (startDate: string, endDate?: string) => {
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : new Date();
+
+  const yearsDiff = differenceInYears(end, start);
+  const monthsDiff = differenceInMonths(end, start);
+
+  return `(${yearsDiff > 0 ? `${yearsDiff} y ` : ""}${monthsDiff} m)`;
+};
 ---
 
 <Layout user={user}>
@@ -108,21 +114,27 @@ const calculateTotalDuration = (dateRanges: { startDate: string; endDate: string
                                   {experience.position}
                                 </p>
                               </div>
-                              <p class="text-gray-500 font-normal text-xs">
-                                <strong>
-                                  {formatDate(experience.startDate)} -{" "}
+                              <p class="text-gray-500 text-xs">
+                                <span class="font-semibold">
+                                  {format(experience.startDate, "MMM yyyy")} -{" "}
                                   {experience.endDate
-                                    ? formatDate(experience.endDate)
+                                    ? format(experience.endDate, "MMM yyyy")
                                     : "Present"}
-                                  <span class="font-normal capitalize">
-                                    •{" "}
-                                    {experience.location.city ??
-                                      capitalize(experience.location.country!)}
-                                  </span>
-                                  <span class="font-normal capitalize">
-                                    • {experience.jobType}
-                                  </span>
-                                </strong>
+                                </span>
+                                <span class="font-semibold">
+                                  {showJobDuration(
+                                    experience.startDate,
+                                    experience.endDate
+                                  )}
+                                </span>
+                                <span class="font-normal capitalize">
+                                  •{" "}
+                                  {experience.location.city ??
+                                    capitalize(experience.location.country!)}
+                                </span>
+                                <span class="font-normal capitalize">
+                                  • {experience.jobType}
+                                </span>
                               </p>
                             </div>
                           </div>
@@ -206,11 +218,11 @@ const calculateTotalDuration = (dateRanges: { startDate: string; endDate: string
                   </p>
                 </div>
                 <p class="text-gray-1k font-normal text-xs">
-                  {education.title} - {education.major}
+                  {education.title}, {education.major}
                 </p>
                 <p class="text-gray-500 font-normal text-xs">
-                  {formatDate(education.startDate)} -{" "}
-                  {formatDate(education.endDate)}
+                  {format(education.startDate, "yyyy")} -{" "}
+                  {format(education.endDate, "yyyy")}
                 </p>
                 <div class="self-start block sm:hidden" />
               </div>

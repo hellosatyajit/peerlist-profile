@@ -185,6 +185,28 @@ export interface PeerlistData {
     }>;
     jobRole: string;
   }>;
+  collections: Array<{
+    title: string;
+    type: "BOOKS" | "VIDEOS" | "PODCASTS" | "LINKS";
+    createdBy: string;
+    itemsCount: number;
+    deletedAt: null;
+    priority: number;
+    subscribersCount: number;
+    items: Array<{
+      id: string;
+      title: string;
+      image: string;
+      type: string;
+      description: string;
+      createdAt: string;
+      author: string;
+      url: string;
+    }>;
+    createdAt: string;
+    updatedAt: string;
+    id: string;
+  }>;
   numPosts: number;
   blogCount: number;
   jobsCount: number;
@@ -199,7 +221,9 @@ export interface PeerlistData {
   };
 }
 
-async function fetchFromPeerlist(path: string): Promise<{ user: PeerlistData }> {
+async function fetchFromPeerlist(
+  path: string
+): Promise<{ user: PeerlistData }> {
   const response = await fetch(`https://peerlist.io/${USER_NAME}${path}`);
   const html = await response.text();
   const scriptDataMatch = html.match(
@@ -209,7 +233,7 @@ async function fetchFromPeerlist(path: string): Promise<{ user: PeerlistData }> 
     throw new Error("Could not find Peerlist data in HTML");
   }
   const jsonData = JSON.parse(scriptDataMatch[1]);
-  
+
   jsonData.props.pageProps.user.address = {
     country: "India",
     city: "Ahmedabad",
@@ -229,6 +253,12 @@ export async function fetchUserResume(): Promise<PeerlistData> {
   return jsonData.user;
 }
 
+export async function fetchUserCollection(): Promise<PeerlistData> {
+  const jsonData = await fetchFromPeerlist("/collections");
+
+  return jsonData.user;
+}
+
 interface ProductHuntProject {
   node: {
     id: string;
@@ -242,7 +272,9 @@ interface ProductHuntProject {
   };
 }
 
-export async function fetchProductHuntProjects(username?: string): Promise<ProductHuntProject[]> {
+export async function fetchProductHuntProjects(
+  username?: string
+): Promise<ProductHuntProject[]> {
   if (!username) {
     return [];
   }
@@ -267,11 +299,11 @@ export async function fetchProductHuntProjects(username?: string): Promise<Produ
     }
   `;
 
-  const response = await fetch('https://api.producthunt.com/v2/api/graphql', {
-    method: 'POST',
+  const response = await fetch("https://api.producthunt.com/v2/api/graphql", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${import.meta.env.PRODUCT_HUNT_DEV_TOKEN}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${import.meta.env.PRODUCT_HUNT_DEV_TOKEN}`,
     },
     body: JSON.stringify({ query }),
   });

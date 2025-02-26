@@ -63,13 +63,41 @@
   color: rgb(var(--gray-1k));
 }
 
-.paragraph-clamp1 {
-  -webkit-line-clamp: 1;
-}
-
-.paragraph-clamp, .paragraph-clamp1 {
+.paragraph-clamp,
+.paragraph-clamp1,
+.paragraph-clamp4 {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+}
+
+.paragraph-clamp1 {
+  -webkit-line-clamp: 1;
+}
+
+.paragraph-clamp4 {
+  -webkit-line-clamp: 4;
+}
+
+.tooltip {
+  position: relative;
+}
+
+.tooltip:before {
+  content: attr(data-text);
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  border-radius: 10px;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  font-size: 10px;
+  display: none;
+}
+
+.tooltip:hover:before {
+  display: block;
 }

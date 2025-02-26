@@ -1,0 +1,325 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { fetchUserCollection } from "../utils/peerlist";
+import type { PeerlistData } from "../utils/peerlist";
+import { formatDistanceToNow, format } from "date-fns";
+
+const user = (await fetchUserCollection()) as PeerlistData;
+
+function formatDate(date: string) {
+  const dateObj = new Date(date);
+  const now = new Date();
+  const diffInDays =
+    (now.getTime() - dateObj.getTime()) / (1000 * 60 * 60 * 24);
+
+  if (diffInDays > 7) {
+    return format(dateObj, "d MMM, yyyy");
+  } else {
+    const formattedDate = formatDistanceToNow(dateObj);
+    return formattedDate !== "now" ? `${formattedDate} ago` : formattedDate;
+  }
+}
+---
+
+<Layout user={user}>
+  {
+    user.collections.map((collection) => (
+      <div class="mb-14">
+        <div class="mb-6 flex justify-between items-center">
+          <div>
+            <a
+              href={`https://peerlist.io/${user.profileHandle}/collections/${collection.id}`}
+              class="hover:underline"
+            >
+              <p class="text-gray-1k font-semibold text-base paragraph-clamp1 break-all">
+                {collection.title}
+              </p>
+            </a>
+            <p class="text-gray-500 font-normal text-[10px]">
+              <span class="lowercase">
+                {collection.itemsCount} {collection.type}
+              </span>
+              •<span> updated {formatDate(collection.updatedAt)}</span>
+            </p>
+          </div>
+          <div class="sm:flex hidden">
+            <div class="flex gap-2 items-center">
+              <button
+                type="button"
+                id={collection.id}
+                class="justify-center shrink-0 flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 disabled:cursor-not-allowed gap-x-1 active:shadow-none text-xs leading-4 py-1 h-6 rounded-lg w-6 text-gray-1k bg-gray-00 border-gray-200 shadow-5 hover:shadow-10 tooltip cursor-pointer"
+                data-text="Copy collection link"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M9.5 14.5L14.5 9.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    vector-effect="non-scaling-stroke"
+                  />
+                  <path
+                    d="M16.8463 14.6095L19.4558 12C21.5147 9.94112 21.5147 6.60302 19.4558 4.54415C17.397 2.48528 14.0589 2.48528 12 4.54415L9.39045 7.1537M14.6095 16.8463L12 19.4558C9.94113 21.5147 6.60303 21.5147 4.54416 19.4558C2.48528 17.3969 2.48528 14.0588 4.54416 12L7.1537 9.39045"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    vector-effect="non-scaling-stroke"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        {collection.type === "BOOKS" ? (
+          <div class="grid md:grid-cols-4 grid-cols-3 gap-2">
+            {collection.items.map((item) => (
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="relative flex items-center justify-start flex-col p-4 cursor-pointer group/collectionItem"
+                role="button"
+                tabindex="0"
+              >
+                <div
+                  class={`rounded-r-lg overflow-hidden border-border relative h-[120px] w-20 border transition-shadow duration-200 ease-in-out group-hover/collectionItem:shadow-[0px_4px_16px_0px_rgba(33,33,33,0.15)] ${!item.image ? "bg-gray-900" : ""}`}
+                >
+                  {item.image ? (
+                    <img
+                      alt={item.title}
+                      loading="lazy"
+                      decoding="async"
+                      data-nimg="fill"
+                      class="duration-500 ease-in-out group-hover:opacity-75
+              sm:scale-100 sm:blur-0 sm:grayscale-0 object-cover"
+                      src={item.image}
+                      style="position: absolute; height: 100%; width: 100%; inset: 0px; color: transparent;"
+                    />
+                  ) : (
+                    <p class="text-gray-400 font-normal text-xs break-all">
+                      {item.title}
+                    </p>
+                  )}
+                </div>
+                <p class="text-gray-1k font-semibold mt-2 mb-0.5 text-center text-sm break-all paragraph-clamp1">
+                  {item.title}
+                </p>
+                <p class="text-gray-1k font-normal text-[10px] mb-1 paragraph-clamp1 text-center">
+                  {item.author}
+                </p>
+              </a>
+            ))}
+          </div>
+        ) : null}
+        {collection.type === "VIDEOS" || collection.type === "LINKS" ? (
+          <div class="grid grid-cols-2 gap-4">
+            {collection.items.map((item) => (
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex flex-col sm:max-w-xs max-w-[220px] justify-between flex-1 group border border-border hover:shadow-focus rounded-lg overflow-hidden outline-none focus-within:border-green-100 transition-shadow cursor-pointer group/collectionItem"
+                role="button"
+                tabindex="0"
+              >
+                <div
+                  class={`relative sm:h-[158px] h-[84px] w-full overflow-hidden ${!item.image ? "bg-gray-900" : ""}`}
+                >
+                  {item.image ? (
+                    <img
+                      alt={item.title}
+                      loading="lazy"
+                      decoding="async"
+                      data-nimg="fill"
+                      src={item.image}
+                      style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;"
+                    />
+                  ) : (
+                    <p class="text-gray-400 font-normal text-xs break-all paragraph-clamp4">
+                      {item.title}
+                    </p>
+                  )}
+                  {collection.type === "VIDEOS" ? (
+                    <div class="absolute sm:top-14 top-6 left-1/2 -ml-5">
+                      <div class="inline-flex h-10 w-10 rounded-full justify-center items-center flex-shrink-0 backdrop-blur-[2px] bg-gray-00 bg-opacity-50 shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)]">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <path
+                            d="M18.8906 12.846C18.5371 14.189 16.8667 15.138 13.5257 17.0361C10.296 18.8709 8.6812 19.7884 7.37983 19.4196C6.8418 19.2671 6.35159 18.9776 5.95624 18.5787C5 17.6139 5 15.7426 5 12C5 8.2574 5 6.3861 5.95624 5.42132C6.35159 5.02245 6.8418 4.73288 7.37983 4.58042C8.6812 4.21165 10.296 5.12907 13.5257 6.96393C16.8667 8.86197 18.5371 9.811 18.8906 11.154C19.0365 11.7084 19.0365 12.2916 18.8906 12.846Z"
+                            fill="currentColor"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linejoin="round"
+                            vector-effect="non-scaling-stroke"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+                <div class="relative sm:p-4 p-2 flex-1 flex justify-between h-full items-center">
+                  <p class="text-gray-1k font-semibold paragraph-clamp text-sm">
+                    {item.title}
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
+        ) : null}
+        {collection.type === "PODCASTS" ? (
+          <div class="grid md:grid-cols-4 grid-cols-3 gap-2">
+            {collection.items.map((item) => (
+              <a
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="relative flex items-center justify-center flex-col py-4 cursor-pointer group/collectionItem"
+                role="button"
+                tabindex="0"
+              >
+                <div
+                  class={`overflow-hidden border-primaryBorder relative sm:w-[120px] sm:h-[120px] h-[100px] w-[100px] rounded-lg border border-gray-200 transition-shadow duration-200 ease-in-out group-hover/collectionItem:shadow-[0px_4px_16px_0px_rgba(33,33,33,0.15)] ${!item.image ? "bg-gray-900" : ""}`}
+                >
+                  {item.image ? (
+                    <img
+                      alt={item.title}
+                      loading="lazy"
+                      decoding="async"
+                      data-nimg="fill"
+                      src={item.image}
+                      style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;"
+                    />
+                  ) : (
+                    <p class="text-gray-400 font-normal text-xs break-all paragraph-clamp4">
+                      {item.title}
+                    </p>
+                  )}
+                </div>
+                <div class="absolute sm:top-14 top-12">
+                  <div class="inline-flex h-10 w-10 rounded-full justify-center items-center flex-shrink-0 backdrop-blur-[2px] bg-gray-00 bg-opacity-50 shadow-[0px_2px_4px_0px_rgba(0,0,0,0.25)]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <path
+                        d="M18.8906 12.846C18.5371 14.189 16.8667 15.138 13.5257 17.0361C10.296 18.8709 8.6812 19.7884 7.37983 19.4196C6.8418 19.2671 6.35159 18.9776 5.95624 18.5787C5 17.6139 5 15.7426 5 12C5 8.2574 5 6.3861 5.95624 5.42132C6.35159 5.02245 6.8418 4.73288 7.37983 4.58042C8.6812 4.21165 10.296 5.12907 13.5257 6.96393C16.8667 8.86197 18.5371 9.811 18.8906 11.154C19.0365 11.7084 19.0365 12.2916 18.8906 12.846Z"
+                        fill="currentColor"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linejoin="round"
+                        vector-effect="non-scaling-stroke"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <p class="text-gray-1k font-semibold mt-2 text-center text-xs smb:text-sm paragraph-clamp1 break-all mb-0.5">
+                  {item.title}
+                </p>
+              </a>
+            ))}
+          </div>
+        ) : null}
+      </div>
+    ))
+  }
+
+  <div
+    id="copy-toast"
+    class="w-max mx-auto min-w-[320px] max-w-[320px] sm:max-w-[400px] hidden items-center justify-between py-2 pl-2 px-4 rounded-xl font-normal bg-gray-900 dark:bg-gray-1k text-gray-00 overflow-hidden logo-drop-shadow fixed bottom-6 right-6 h-fit"
+  >
+    <div class="flex items-center gap-x-2 w-full">
+      <span>
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          ><path
+            d="M12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22Z"
+            stroke="#00AA45"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            vector-effect="non-scaling-stroke"></path><path
+            d="M7 12.5L10 15.5L17 8.5"
+            stroke="#00AA45"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            vector-effect="non-scaling-stroke"></path></svg
+        >
+      </span>
+      <div>
+        <p class="text-gray-00 font-normal text-sm">Link copied</p>
+      </div>
+    </div>
+    <button type="button" aria-label="close" class="ml-2 cursor-pointer" onclick="hideCopyToast();">
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M6.00018 18L12.0002 12M18.0002 6L11.999 12M11.999 12L6.00018 6M12.0002 12L18.0002 18"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          vector-effect="non-scaling-stroke"></path>
+      </svg>
+    </button>
+  </div>
+
+  <script>
+    function copyCollectionLink(event: Event) {
+      const button = (event.target as HTMLElement).closest("button");
+      if (!button) return;
+
+      const collectionId = button.id;
+      if (!collectionId) return;
+
+      navigator.clipboard.writeText(
+        `https://peerlist.io/${collectionId}/collections/${collectionId}`
+      );
+
+      showCopyToast();
+    }
+
+    function showCopyToast() {
+      const copyToast = document.getElementById("copy-toast");
+      copyToast?.classList.add("flex!");
+      setTimeout(function () {
+        copyToast?.classList.remove("flex!");
+      }, 3000);
+    }
+
+    function hideCopyToast() {
+      const copyToast = document.getElementById("copy-toast");
+      copyToast?.classList.remove("flex!");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const buttons = document.querySelectorAll("button");
+      buttons.forEach((button) => {
+        button.addEventListener("click", copyCollectionLink);
+      });
+    });
+  </script>
+</Layout>
