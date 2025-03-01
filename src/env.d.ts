@@ -1,6 +1,7 @@
 interface ImportMetaEnv {
-  readonly PRODUCT_HUNT_DEV_TOKEN: string;
   readonly SITE_DOMAIN: string;
+  readonly PEERLIST_USERNAME: string;
+  readonly PRODUCT_HUNT_DEV_TOKEN: string;
 }
 
 interface ImportMeta {

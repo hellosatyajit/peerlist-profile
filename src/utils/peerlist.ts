@@ -1,4 +1,4 @@
-const USER_NAME = "hellosatyajit";
+const USER_NAME = import.meta.env.PEERLIST_USERNAME;
 export const SITE_DOMAIN = import.meta.env.SITE_DOMAIN;
 
 export interface PeerlistData {
