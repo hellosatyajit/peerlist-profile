@@ -310,5 +310,6 @@ export async function fetchProductHuntProjects(
   });
 
   const data = await response.json();
-  return data.data.user.madePosts.edges;
+
+  return data?.data?.user?.madePosts?.edges || [];
 }

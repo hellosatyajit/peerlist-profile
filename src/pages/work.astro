@@ -5,7 +5,7 @@ import type { PeerlistData } from "../utils/peerlist";
 import { ProductHuntIcon } from "../assets/icons";
 const user = (await fetchUserProfile()) as PeerlistData;
 const productHuntProjects = await fetchProductHuntProjects(
-  user.integrations?.productHunt?.username
+  user?.integrations?.productHunt?.username
 );
 ---
 
