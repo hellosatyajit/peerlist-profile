@@ -8,23 +8,45 @@ The following integrations are supported:
 
 - [ ] ADPList
 - [ ] CodeForces
-- [ ] DEV
+- [x] DEV
 - [ ] Dribbble
 - [ ] Github
 - [ ] Gumroad
-- [ ] Hashnode
-- [ ] Medium
+- [x] Hashnode
+- [x] Medium
 - [x] ProductHunt
 - [ ] RSS feed
-- [ ] Substack
+- [x] Substack
 - [ ] YouTube
 
 ## TODO
 
 - [ ] Add support for logos in skills.
-- [ ] Cron to update the website every 24 hours.
+- [x] Cron to update the website every 24 hours.
 - [ ] OpenGraph image.
 - [ ] Get location from peerlist.
+
+## Daily Updates with Cron Job
+
+To keep the information updated regularly, you can set up a webhook and a cron job to trigger site updates automatically.
+
+### Creating a Deploy Webhook
+
+Create the deploy webhook from the Settings or Site Configuration section from the dashboard of the your deployment platform.
+
+You can also use this deploy hook URL directly to redeploy the site manually - for example, if you update something on your Peerlist profile.
+
+### Setting up a Cron Job
+
+You can use any cron provider you like, for example https://cron-job.org.
+
+1. Create a new cron job.
+2. Add a title for your job.
+3. Paste the webhook URL into the URL field.
+4. Select the frequency to **every day** at your preferred time.
+5. (Optional) You can check other options if needed.
+
+This will ensure your website stays updated without manual intervention.
 
 ## 🧞 Commands
 

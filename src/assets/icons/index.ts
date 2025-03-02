@@ -6,6 +6,11 @@ import PeerlistIcon from "./PeerlistIcon.astro";
 import FigmaIcon from "./FigmaIcon.astro";
 import ThreadsIcon from "./ThreadsIcon.astro";
 import YoutubeIcon from "./YoutubeIcon.astro";
+import BehanceIcon from "./BehanceIcon.astro";
+import MediumIcon from "./MediumIcon.astro";
+import HashnodeIcon from "./HashnodeIcon.astro";
+import DevToIcon from "./DevToIcon.astro";
+import SubstackIcon from "./SubstackIcon.astro";
 
 export {
   TwitterIcon,
@@ -16,4 +21,9 @@ export {
   FigmaIcon,
   ThreadsIcon,
   YoutubeIcon,
+  BehanceIcon,
+  MediumIcon,
+  HashnodeIcon,
+  DevToIcon,
+  SubstackIcon,
 };

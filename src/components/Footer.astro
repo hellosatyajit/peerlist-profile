@@ -8,7 +8,8 @@ import {
   PeerlistIcon,
   FigmaIcon,
   ThreadsIcon,
-  YoutubeIcon
+  YoutubeIcon,
+  BehanceIcon,
 } from "../assets/icons";
 
 const { user }: { user: PeerlistData } = Astro.props as { user: PeerlistData };
@@ -21,6 +22,7 @@ const socialIcons = {
   Figma: FigmaIcon,
   Threads: ThreadsIcon,
   Youtube: YoutubeIcon,
+  Behance: BehanceIcon,
 };
 
 const currentYear = new Date().getFullYear();

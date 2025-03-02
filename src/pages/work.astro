@@ -1,11 +1,35 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { fetchUserProfile, fetchProductHuntProjects } from "../utils/peerlist";
+import {
+  fetchUserProfile,
+  fetchProductHuntProjects,
+  fetchMediumPosts,
+  fetchHashnodePosts,
+  fetchDevToPosts,
+  fetchSubstackPosts,
+} from "../utils/peerlist";
 import type { PeerlistData } from "../utils/peerlist";
-import { ProductHuntIcon } from "../assets/icons";
+import {
+  ProductHuntIcon,
+  MediumIcon,
+  HashnodeIcon,
+  DevToIcon,
+  SubstackIcon,
+} from "../assets/icons";
+
 const user = (await fetchUserProfile()) as PeerlistData;
 const productHuntProjects = await fetchProductHuntProjects(
   user?.integrations?.productHunt?.username
+);
+const mediumPosts = await fetchMediumPosts(
+  user?.integrations?.medium?.username
+);
+const hashnodePosts = await fetchHashnodePosts(
+  user?.integrations?.hashnode?.username
+);
+const devToPosts = await fetchDevToPosts(user?.integrations?.devto?.username);
+const substackPosts = await fetchSubstackPosts(
+  user?.integrations?.substack?.username
 );
 ---
 
@@ -220,7 +244,295 @@ const productHuntProjects = await fetchProductHuntProjects(
       </div>
     </section>
   </div>
-
+  {
+    mediumPosts.length > 0 && (
+      <div class="mb-20">
+        <section id="Medium">
+          <div class="flex items-center justify-between">
+            <a
+              href={`https://medium.com/@${user?.integrations?.medium?.username}`}
+              target="_blank"
+              rel="nofollow noreferrer"
+              class="outline-none focus:ring-[1px] focus:ring-green-100 rounded"
+              tabindex="0"
+            >
+              <div class="flex items-center mr-4">
+                <div class="mr-2 h-auto relative">
+                  <MediumIcon size="24" />
+                </div>
+                <p class="text-gray-1k font-semibold text-base">Medium</p>
+              </div>
+            </a>
+            <div class="flex items-center" />
+          </div>
+          <div class="grid md:grid-cols-2 gap-4 mt-6">
+            {mediumPosts.map((post) => (
+              <article
+                class="flex flex-col justify-between flex-1 group border border-border hover:shadow-focus rounded-xl overflow-hidden outline-none focus-within:border-green-100 transition-shadow"
+                role="none"
+              >
+                <a
+                  href={post.link}
+                  target="_blank"
+                  rel="noreferrer nofollow ugc"
+                  class="outline-none flex flex-col justify-between h-full"
+                >
+                  <div
+                    class={`relative h-[150px] w-full overflow-hidden ${!post.thumbnail ? "bg-gray-900" : ""}`}
+                  >
+                    {post.thumbnail ? (
+                      <img
+                        alt={post.title}
+                        loading="lazy"
+                        decoding="async"
+                        data-nimg="fill"
+                        src={post.thumbnail}
+                        style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;"
+                      />
+                    ) : (
+                      <p class="text-gray-400 font-normal text-xs break-all paragraph-clamp4">
+                        {post.title}
+                      </p>
+                    )}
+                  </div>
+                  <div class="p-4 flex-1 flex flex-col justify-between h-full">
+                    <p class="text-gray-1k font-semibold text-sm paragraph-clamp">
+                      {post.title}
+                    </p>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    )
+  }
+  {
+    hashnodePosts.length > 0 && (
+      <div class="mb-20">
+        <section id="Medium">
+          <div class="flex items-center justify-between">
+            <a
+              href={`https://${user?.integrations?.hashnode?.username}.hashnode.dev`}
+              target="_blank"
+              rel="nofollow noreferrer"
+              class="outline-none focus:ring-[1px] focus:ring-green-100 rounded"
+              tabindex="0"
+            >
+              <div class="flex items-center mr-4">
+                <div class="mr-2 h-auto relative">
+                  <HashnodeIcon size="24" />
+                </div>
+                <p class="text-gray-1k font-semibold text-base">Hashnode</p>
+              </div>
+            </a>
+            <div class="flex items-center" />
+          </div>
+          <div class="grid md:grid-cols-2 gap-4 mt-6">
+            {hashnodePosts.map((post) => (
+              <article
+                class="flex flex-col justify-between flex-1 group border border-border hover:shadow-focus rounded-xl overflow-hidden outline-none focus-within:border-green-100 transition-shadow"
+                role="none"
+              >
+                <a
+                  href={post.url}
+                  target="_blank"
+                  rel="noreferrer nofollow ugc"
+                  class="outline-none flex flex-col justify-between h-full"
+                >
+                  <div
+                    class={`relative h-[150px] w-full overflow-hidden ${!post.image ? "bg-gray-900" : ""}`}
+                  >
+                    {post.image ? (
+                      <img
+                        alt={post.title}
+                        loading="lazy"
+                        decoding="async"
+                        data-nimg="fill"
+                        src={post.image}
+                        style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;"
+                      />
+                    ) : (
+                      <p class="text-gray-400 font-normal text-xs break-all paragraph-clamp4">
+                        {post.title}
+                      </p>
+                    )}
+                  </div>
+                  <div class="p-4 flex-1 flex flex-col justify-between h-full">
+                    <p class="text-gray-1k font-semibold text-sm paragraph-clamp">
+                      {post.title}
+                    </p>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    )
+  }
+  {
+    devToPosts.length > 0 && (
+      <div class="mb-20">
+        <section id="Medium">
+          <div class="flex items-center justify-between">
+            <a
+              href={`https://dev.to/${user?.integrations?.devto?.username}`}
+              target="_blank"
+              rel="nofollow noreferrer"
+              class="outline-none focus:ring-[1px] focus:ring-green-100 rounded"
+              tabindex="0"
+            >
+              <div class="flex items-center mr-4">
+                <div class="mr-2 h-auto relative">
+                  <DevToIcon size="24" />
+                </div>
+                <p class="text-gray-1k font-semibold text-base">DEV</p>
+              </div>
+            </a>
+            <div class="flex items-center" />
+          </div>
+          <div class="grid md:grid-cols-2 gap-4 mt-6">
+            {devToPosts.map((post) => (
+              <article
+                class="flex flex-col justify-between flex-1 group border border-border hover:shadow-focus rounded-xl overflow-hidden outline-none focus-within:border-green-100 transition-shadow"
+                role="none"
+              >
+                <a
+                  href={post.url}
+                  target="_blank"
+                  rel="noreferrer nofollow ugc"
+                  class="outline-none flex flex-col justify-between h-full"
+                >
+                  <div
+                    class={`relative h-[150px] w-full overflow-hidden ${!post.cover_image ? "bg-gray-900" : ""}`}
+                  >
+                    {post.cover_image ? (
+                      <img
+                        alt={post.title}
+                        loading="lazy"
+                        decoding="async"
+                        data-nimg="fill"
+                        src={post.cover_image}
+                        style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;"
+                      />
+                    ) : (
+                      <p class="text-gray-400 font-normal text-xs break-all paragraph-clamp4">
+                        {post.title}
+                      </p>
+                    )}
+                  </div>
+                  <div class="p-4 flex-1 flex flex-col justify-between h-full">
+                    <p class="text-gray-1k font-semibold text-sm paragraph-clamp">
+                      {post.title}
+                    </p>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    )
+  }
+  {
+    substackPosts.posts.length > 0 && (
+      <div class="mb-20">
+        <section id="Substack">
+          <div class="flex items-center justify-between">
+            <div class="group">
+              <a
+                href={`https://${user?.integrations?.substack?.username}.substack.com`}
+                target="_blank"
+                rel="nofollow noreferrer"
+                class="outline-none focus:ring-[1px] focus:ring-green-100 rounded"
+                tabindex="0"
+              >
+                <div class="flex items-center mr-4">
+                  <div class="mr-2 h-auto relative">
+                    <div>
+                      <div class="relative">
+                        <img
+                          alt={substackPosts.publication?.name}
+                          loading="lazy"
+                          width="40"
+                          height="40"
+                          decoding="async"
+                          data-nimg="1"
+                          class="rounded-full group-hover:shadow-focus transition-all"
+                          src={substackPosts.publication?.logo}
+                          style="color: transparent;"
+                        />
+                        <span class="absolute bottom-0 right-0 w-4 h-4 bg-gray-00 border-2 border-gray-00 ary flex items-center justify-center rounded-full shadow">
+                          <SubstackIcon size="8" />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="text-gray-1k font-semibold text-base">
+                    {substackPosts.publication?.name}
+                  </p>
+                </div>
+              </a>
+            </div>
+            <div class="flex items-center">
+              <div class="flex items-center">
+                <a
+                  target="_blank"
+                  class="outline-none focus-within:border focus:border-green-100 rounded"
+                  href={`https://${user?.integrations?.substack?.username}.substack.com/subscribe`}
+                >
+                  <span class="flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 disabled:cursor-not-allowed gap-x-1 active:shadow-none text-xs leading-4 py-1 h-6 rounded-lg px-3 text-gray-00 bg-gray-900 border-gray-1k hover:bg-gray-1k disabled:bg-gray-900">
+                    Subscribe
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4 mt-6">
+            {substackPosts.posts.map((post) => (
+              <article
+                class="flex flex-col justify-between flex-1 group border border-border hover:shadow-focus rounded-xl overflow-hidden outline-none focus-within:border-green-100 transition-shadow"
+                role="none"
+              >
+                <a
+                  href={post.url}
+                  target="_blank"
+                  rel="noreferrer nofollow ugc"
+                  class="outline-none flex flex-col justify-between h-full"
+                >
+                  <div
+                    class={`relative h-[150px] w-full overflow-hidden ${!post.cover_image ? "bg-gray-900" : ""}`}
+                  >
+                    {post.cover_image ? (
+                      <img
+                        alt={post.title}
+                        loading="lazy"
+                        decoding="async"
+                        data-nimg="fill"
+                        src={post.cover_image}
+                        style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;"
+                      />
+                    ) : (
+                      <p class="text-gray-400 font-normal text-xs break-all paragraph-clamp4">
+                        {post.title}
+                      </p>
+                    )}
+                  </div>
+                  <div class="p-4 flex-1 flex flex-col justify-between h-full">
+                    <p class="text-gray-1k font-semibold text-sm paragraph-clamp">
+                      {post.title}
+                    </p>
+                  </div>
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
+      </div>
+    )
+  }
   {
     productHuntProjects.length > 0 && (
       <div class="mb-20">
@@ -260,6 +572,7 @@ const productHuntProjects = await fetchProductHuntProjects(
                         alt={project.node.name}
                         class="h-16 w-16 rounded bg-cover bg-center"
                       />
+
                       <div class="pl-2 flex flex-col w-full">
                         <p class="text-gray-1k font-semibold text-sm paragraph-clamp1">
                           {project.node.name}

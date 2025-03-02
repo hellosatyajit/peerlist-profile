@@ -1,3 +1,5 @@
+import * as cheerio from "cheerio";
+
 const USER_NAME = import.meta.env.PEERLIST_USERNAME;
 export const SITE_DOMAIN = import.meta.env.SITE_DOMAIN;
 
@@ -26,6 +28,10 @@ export interface PeerlistData {
   integrations: {
     productHunt?: { username: string };
     github?: { username: string; verified: boolean };
+    medium?: { username: string };
+    hashnode?: { username: string };
+    devto?: { username: string };
+    substack?: { username: string };
   };
   integrationsOrder: Array<{ name: string }>;
   lastName: string;
@@ -313,3 +319,163 @@ export async function fetchProductHuntProjects(
 
   return data?.data?.user?.madePosts?.edges || [];
 }
+
+interface MediumPost {
+  title: string;
+  pubDate: string;
+  link: string;
+  guid: string;
+  author: string;
+  thumbnail: string;
+  description: string;
+  content: string;
+  enclosure: {};
+  categories: Array<string>;
+}
+
+function getImageSources(description: string) {
+  const $ = cheerio.load(description);
+  const imgSources: string[] = [];
+
+  $("figure > img").each((_, img) => {
+    const src = $(img).attr("src");
+    if (src) imgSources.push(src);
+  });
+
+  return imgSources.length > 0 ? imgSources[0] : "";
+}
+
+export async function fetchMediumPosts(
+  username?: string
+): Promise<MediumPost[]> {
+  if (!username) {
+    return [];
+  }
+
+  const response = await fetch(
+    `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@${username}`
+  );
+
+  const data = await response.json();
+
+  const formattedPosts = data?.items?.map((post: MediumPost) => ({
+    ...post,
+    thumbnail: getImageSources(post.description),
+  }));
+
+  return formattedPosts || [];
+}
+
+interface HashnodePost {
+  url: string;
+  title: string;
+  image: string;
+}
+
+export async function fetchHashnodePosts(
+  username?: string
+): Promise<HashnodePost[]> {
+  if (!username) {
+    return [];
+  }
+
+  const query = `
+    query Publication($host: String = "${username}.hashnode.dev") {
+      publication(host: $host) {
+        posts(first: 10) {
+          edges {
+            node {
+              url
+              title
+              coverImage {
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const response = await fetch("https://gql.hashnode.com", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+  });
+
+  const data = await response.json();
+
+  const formattedPosts = data?.data?.publication?.posts?.edges?.map(
+    (post: { node: any }) => ({
+      ...post.node,
+      image: post.node.coverImage.url,
+    })
+  );
+
+  return formattedPosts || [];
+}
+
+interface DevToPost {
+  title: string;
+  cover_image: string;
+  url: string;
+}
+
+export const fetchDevToPosts = async (
+  username?: string
+): Promise<DevToPost[]> => {
+  if (!username) {
+    return [];
+  }
+
+  const response = await fetch(
+    `https://dev.to/api/articles?username=${username}&per_page=10`
+  );
+
+  const data = await response.json();
+
+  return data || [];
+};
+
+interface Substack {
+  publication: {
+    name: string;
+    logo: string;
+  } | null;
+  posts: Array<{
+    title: string;
+    url: string;
+    cover_image: string;
+  }>;
+}
+
+export const fetchSubstackPosts = async (
+  username?: string
+): Promise<Substack> => {
+  if (!username) {
+    return {
+      publication: null,
+      posts: [],
+    };
+  }
+
+  const response = await fetch(
+    `https://${username}.substack.com/api/v1/posts?limit=10`
+  );
+
+  const data = await response.json();
+
+  const publication =
+    data?.[0]?.publishedBylines?.[0]?.publicationUsers?.[0]?.publication;
+  const formattedPosts = {
+    publication: {
+      name: publication?.name,
+      logo: "https://substackcdn.com/image/fetch/w_256,c_limit,f_auto,q_auto:good,fl_progressive:steep/"+publication?.logo_url,
+    },
+    posts: data,
+  };
+
+  return formattedPosts || [];
+};
