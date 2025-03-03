@@ -21,7 +21,7 @@ The following integrations are supported:
 
 ## TODO
 
-- [ ] Add support for logos in skills.
+- [x] Add support for logos in skills.
 - [x] Cron to update the website every 24 hours.
 - [ ] OpenGraph image.
 - [ ] Get location from peerlist.

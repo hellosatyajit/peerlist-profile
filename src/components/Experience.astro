@@ -400,6 +400,19 @@ sortedCompanies.forEach((company) => {
                           <div class="flex gap-2 pt-2 flex-wrap items-center overflow-x-scroll lg:overscroll-auto">
                             {experience.skills.map((skill) => (
                               <span class="text-xs font-medium leading-4 border border-border rounded-lg text-gray-1k inline-flex items-center justify-center gap-x-1 px-2 py-1 h-6 box-border hover:shadow-tag-hover transition-all ease-in-out select-none group/tag bg-gray-00">
+                                <img
+                                  src={
+                                    "https://d26c7l40gvbbg2.cloudfront.net/tool_icons/" +
+                                    skill.name?.toLowerCase().replaceAll(" ", "_") +
+                                    ".svg"
+                                  }
+                                  alt={`${skill.name} icon`}
+                                  width="14"
+                                  height="14"
+                                  class="object-cover hidden"
+                                  id={`${skill.name}-icon`}
+                                  onload={`showImg(this)`}
+                                />
                                 <span>{skill.name}</span>
                               </span>
                             ))}

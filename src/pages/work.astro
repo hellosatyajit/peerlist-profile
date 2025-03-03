@@ -1,14 +1,28 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { fetchUserProfile } from "../utils/peerlist";
+import LaunchedThisWeek from "../components/LaunchedThisWeek.astro";
 import Projects from "../components/Projects.astro";
 import ProductHunt from "../components/ProductHunt.astro";
 import type { PeerlistData } from "../utils/types";
+import { isSameWeek } from "date-fns";
 
 const user = (await fetchUserProfile()) as PeerlistData;
+
+const sortedProjects =
+  user.projectsOrder
+    ?.map((id) => user.projects.find((project) => project.id === id))
+    .filter((project) => project !== undefined) ||
+  user.projects ||
+  [];
+
+const currentWeekProject = sortedProjects.find((project) =>
+  isSameWeek(new Date(project.createdAt), new Date())
+);
 ---
 
 <Layout title={`Work - ${user.displayName}`} path="work" user={user}>
-  <Projects projects={user.projects} />
+  {currentWeekProject && <LaunchedThisWeek project={currentWeekProject} />}
+  <Projects projects={sortedProjects} />
   <ProductHunt username={user?.integrations?.productHunt?.username!} />
 </Layout>

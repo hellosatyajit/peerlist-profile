@@ -1,0 +1,92 @@
+---
+import { format } from "date-fns";
+import Layout from "../layouts/Layout.astro";
+import { fetchUserArticles } from "../utils/peerlist";
+import type { PeerlistData } from "../utils/types";
+
+const user = (await fetchUserArticles()) as PeerlistData;
+---
+
+<Layout title={`Articles - ${user.displayName}`} path="articles" user={user}>
+  {
+    user.blog.length > 0 &&
+      user.blog
+        .sort(
+          (a, b) =>
+            new Date(b.publishedAt).getTime() -
+            new Date(a.publishedAt).getTime()
+        )
+        .map((blog) => (
+          <div class="relative bg-gray-00 hover:bg-gray-25 transition-all ease-in-out">
+            <a href={`https://peerlist.io/${blog.url}`}>
+              <div class="flex items-center justify-between gap-4 py-4 px-4 sm:px-6">
+                <div>
+                  <p class="text-gray-1k font-semibold text-base paragraph-clamp1">
+                    {blog.title}
+                  </p>
+                  <p class="text-gray-1k font-normal text-sm paragraph-clamp1 mt-1">
+                    {blog.subTitle}
+                  </p>
+                  <div class="flex items-center justify-between mt-1 mob:mt-2">
+                    <div class="flex items-center gap-x-2">
+                      <div class="flex items-center gap-x-1">
+                        <span class="text-gray-500">
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M19.4626 3.9941C16.7809 2.34918 14.4404 4.01206 13.0344 5.06796C12.4578 5.50091 12.1696 5.71738 12 5.71738C11.8304 5.71738 11.5422 5.50091 10.9656 5.06796C9.55962 4.01206 7.21909 2.34918 4.53744 3.9941C1.01807 6.15289 0.22172 13.2749 8.33953 19.2834C9.88572 20.4278 10.6588 21 12 21C13.3412 21 14.1143 20.4278 15.6605 19.2834C23.7783 13.2749 22.9819 6.15289 19.4626 3.9941Z"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                              stroke-linecap="round"
+                              vector-effect="non-scaling-stroke"
+                            />
+                          </svg>
+                        </span>
+                        <span class="text-gray-500 font-medium text-xs">
+                          {blog.upvoteCount}
+                        </span>
+                      </div>
+                      <div class="flex items-center gap-x-1">
+                        <span class="text-gray-500">
+                          <svg
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5"
+                              stroke="currentColor"
+                              stroke-width="1.5"
+                              stroke-linecap="round"
+                              vector-effect="non-scaling-stroke"
+                            />
+                          </svg>
+                        </span>
+                        <span class="text-gray-500 font-medium text-xs">
+                          {blog.commentCount}
+                        </span>
+                      </div>
+                      <p class="text-gray-500 font-medium text-xs ml-2">
+                        {format(new Date(blog.publishedAt), "MMM d, yyyy")}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <img
+                  src={blog.featuredImage}
+                  alt={blog.title}
+                  class="h-16 border object-cover border-border rounded-xl bg-gray-50 shrink-0 aspect-square sm:aspect-video"
+                />
+              </div>
+            </a>
+          </div>
+        ))
+  }
+</Layout>

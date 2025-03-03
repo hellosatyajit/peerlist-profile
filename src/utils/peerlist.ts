@@ -12,69 +12,6 @@ import type {
 const USER_NAME = import.meta.env.PEERLIST_USERNAME;
 export const SITE_DOMAIN = import.meta.env.SITE_DOMAIN;
 
-export interface Project {
-  title: string;
-  slug: string;
-  tagline?: string;
-  url?: string;
-  tags: string[];
-  categories?: Array<{
-    name: string;
-    id: string;
-    title: string;
-    description: string;
-  }>;
-  images?: Array<string>;
-  isOpenSource?: boolean;
-  createdAt: string;
-  hackathonInfo: {
-    slug: string;
-    submittedAt: null;
-  } | null;
-  openForCollab: boolean;
-  commentsUpdatedAt: string;
-  id: string;
-  teamName?: string;
-  createdBy: {
-    displayName: string;
-    firstName: string;
-    headline: string;
-    lastName: string;
-    profileHandle: string;
-    profilePicture: string;
-    companyVerifiedAt: string;
-    verified: boolean;
-    id: string;
-    canSuperUpvote: boolean;
-  };
-  creator: {
-    displayName: string;
-    firstName: string;
-    headline: string;
-    lastName: string;
-    profileHandle: string;
-    profilePicture: string;
-    companyVerifiedAt: string;
-    verified: boolean;
-    id: string;
-    canSuperUpvote: boolean;
-  };
-  projectURL: string;
-  collaborators: Array<{
-    firstName: string;
-    lastName: string;
-    displayName: string;
-    profilePicture: string;
-    headline: string;
-    profileHandle: string;
-    id: string;
-  }>;
-  upvotesCount?: number;
-  isUpvoted?: boolean;
-  commentCount?: number;
-  bookmarkCount?: number;
-}
-
 async function fetchFromPeerlist(
   path: string
 ): Promise<{ user: PeerlistData }> {
@@ -110,6 +47,12 @@ export async function fetchUserResume(): Promise<PeerlistData> {
 export async function fetchUserCollection(): Promise<PeerlistData> {
   const jsonData = await fetchFromPeerlist("/collections");
 
+  return jsonData.user;
+}
+
+export async function fetchUserArticles(): Promise<PeerlistData> {
+  const jsonData = await fetchFromPeerlist("/articles");
+  
   return jsonData.user;
 }
 

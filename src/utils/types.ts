@@ -1,3 +1,137 @@
+interface Creator {
+  displayName: string;
+  firstName: string;
+  headline: string;
+  lastName: string;
+  profileHandle: string;
+  profilePicture: string;
+  companyVerifiedAt: string;
+  verified: boolean;
+  id: string;
+  canSuperUpvote: boolean;
+}
+
+interface Experience {
+  createdAt: string;
+  title: string;
+  position: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  location: {
+    city?: string;
+    country?: string;
+    code?: string;
+  } & ({ city: string } | { country: string });
+  organizationName: string;
+  jobType: string;
+  skills: Array<{
+    id?: string;
+    name: string;
+    label: string;
+  }>;
+  current: boolean;
+  promoted: boolean;
+  verifiedAt: null | string;
+  website?: string;
+  uuid: string;
+  isExpiring: boolean;
+  verified: boolean;
+  role: string;
+  id: string;
+  companyId?: string;
+  company: string;
+  companyName?: string;
+  logo?: string;
+  profileHandle?: string;
+  isClaimed?: boolean;
+  tagline?: string;
+  companyVerifiedAt?: string;
+  companyVerifiedBy?: string;
+  companyVerification?: {
+    approvedBy: {
+      at: string;
+      id: string;
+    };
+  };
+  workSkills: Array<{
+    id?: string;
+    name: string;
+    label: string;
+  }>;
+  jobRole: string;
+}
+
+interface Education {
+  createdAt: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  organizationName: string;
+  courseName?: string;
+  skills: Array<{ name: string; label: string }>;
+  current: boolean;
+  promoted: boolean;
+  verifiedAt: null | string;
+  uuid: string;
+  isExpiring: boolean;
+  verified: boolean;
+  id: string;
+  instituteName: string;
+  institution: string;
+  degree: string;
+  major?: string;
+  startYear: number;
+  endYear: number;
+}
+
+interface Collection {
+  title: string;
+  type: "BOOKS" | "VIDEOS" | "PODCASTS" | "LINKS";
+  createdBy: string;
+  itemsCount: number;
+  deletedAt: null;
+  priority: number;
+  subscribersCount: number;
+  items: Array<{
+    id: string;
+    title: string;
+    image: string;
+    type: string;
+    description: string;
+    createdAt: string;
+    author: string;
+    url: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+  id: string;
+}
+
+interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  subTitle: string;
+  publishedAt: string;
+  createdBy: string;
+  url: string;
+  seo: {
+    title: string;
+    description: string;
+    ogImage: string | null;
+    keywords: string[];
+  };
+  creator: Creator;
+  upvoteCount: number;
+  bookmarkCount: number;
+  commentCount: number;
+  editAccess: boolean;
+  featuredImage: string;
+  content: string;
+  readTime: number;
+}
+
 export interface Project {
   title: string;
   slug: string;
@@ -21,40 +155,10 @@ export interface Project {
   commentsUpdatedAt: string;
   id: string;
   teamName?: string;
-  createdBy: {
-    displayName: string;
-    firstName: string;
-    headline: string;
-    lastName: string;
-    profileHandle: string;
-    profilePicture: string;
-    companyVerifiedAt: string;
-    verified: boolean;
-    id: string;
-    canSuperUpvote: boolean;
-  };
-  creator: {
-    displayName: string;
-    firstName: string;
-    headline: string;
-    lastName: string;
-    profileHandle: string;
-    profilePicture: string;
-    companyVerifiedAt: string;
-    verified: boolean;
-    id: string;
-    canSuperUpvote: boolean;
-  };
+  createdBy: Creator[];
+  creator: Creator;
   projectURL: string;
-  collaborators: Array<{
-    firstName: string;
-    lastName: string;
-    displayName: string;
-    profilePicture: string;
-    headline: string;
-    profileHandle: string;
-    id: string;
-  }>;
+  collaborators: Array<Creator>;
   upvotesCount?: number;
   isUpvoted?: boolean;
   commentCount?: number;
@@ -118,100 +222,10 @@ export interface PeerlistData {
   publishedAt: string;
   id: string;
   projects: Array<Project>;
-  education: Array<{
-    createdAt: string;
-    title: string;
-    startDate: string;
-    endDate: string;
-    organizationName: string;
-    courseName?: string;
-    skills: Array<{ name: string; label: string }>;
-    current: boolean;
-    promoted: boolean;
-    verifiedAt: null | string;
-    uuid: string;
-    isExpiring: boolean;
-    verified: boolean;
-    id: string;
-    instituteName: string;
-    institution: string;
-    degree: string;
-    major?: string;
-    startYear: number;
-    endYear: number;
-  }>;
-  experience: Array<{
-    createdAt: string;
-    title: string;
-    position: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    location: {
-      city?: string;
-      country?: string;
-      code?: string;
-    } & ({ city: string } | { country: string });
-    organizationName: string;
-    jobType: string;
-    skills: Array<{
-      id?: string;
-      name: string;
-      label: string;
-    }>;
-    current: boolean;
-    promoted: boolean;
-    verifiedAt: null | string;
-    website?: string;
-    uuid: string;
-    isExpiring: boolean;
-    verified: boolean;
-    role: string;
-    id: string;
-    companyId?: string;
-    company: string;
-    companyName?: string;
-    logo?: string;
-    profileHandle?: string;
-    isClaimed?: boolean;
-    tagline?: string;
-    companyVerifiedAt?: string;
-    companyVerifiedBy?: string;
-    companyVerification?: {
-      approvedBy: {
-        at: string;
-        id: string;
-      };
-    };
-    workSkills: Array<{
-      id?: string;
-      name: string;
-      label: string;
-    }>;
-    jobRole: string;
-  }>;
-  collections: Array<{
-    title: string;
-    type: "BOOKS" | "VIDEOS" | "PODCASTS" | "LINKS";
-    createdBy: string;
-    itemsCount: number;
-    deletedAt: null;
-    priority: number;
-    subscribersCount: number;
-    items: Array<{
-      id: string;
-      title: string;
-      image: string;
-      type: string;
-      description: string;
-      createdAt: string;
-      author: string;
-      url: string;
-    }>;
-    createdAt: string;
-    updatedAt: string;
-    id: string;
-  }>;
+  education: Array<Education>;
+  experience: Array<Experience>;
+  collections: Array<Collection>;
+  blog: Array<Article>;
   numPosts: number;
   blogCount: number;
   jobsCount: number;

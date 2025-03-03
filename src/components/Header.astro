@@ -125,13 +125,7 @@ const { user } = Astro.props as { user: PeerlistData };
       </div>
     </div>
     <div class="flex flex-col gap-2 items-center justify-center">
-      <button
-        type="button"
-        data-tip="true"
-        data-for="profile-verification-info"
-        data-effect="solid"
-        class="flex items-center cursor-default"
-      >
+      <div class="flex items-center cursor-default">
         <h1 class="font-semibold text-lg">{user.displayName}</h1>
         <div class="pl-1 cursor-pointer">
           {
@@ -190,11 +184,13 @@ const { user } = Astro.props as { user: PeerlistData };
               </div>
             )
           }
-        </div></button
-      ><h2 class="text-sm font-normal text-gray-1k text-center">
+        </div>
+      </div>
+      <h2 class="text-sm font-normal text-gray-1k text-center">
         {user.headline}
       </h2>
-    </div><div
+    </div>
+    <div
       class="flex flex-wrap flex-row justify-center items-center sm:gap-4 gap-2"
     >
       <div class="flex gap-1 items-center">
@@ -204,7 +200,8 @@ const { user } = Astro.props as { user: PeerlistData };
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          ><path
+        >
+          <path
             d="M13.6177 21.367C13.1841 21.773 12.6044 22 12.0011 22C11.3978 22 10.8182 21.773 10.3845 21.367C6.41302 17.626 1.09076 13.4469 3.68627 7.37966C5.08963 4.09916 8.45834 2 12.0011 2C15.5439 2 18.9126 4.09916 20.316 7.37966C22.9082 13.4393 17.599 17.6389 13.6177 21.367Z"
             stroke="currentColor"
             stroke-width="1.5"
@@ -212,11 +209,13 @@ const { user } = Astro.props as { user: PeerlistData };
             d="M15.5 11C15.5 12.933 13.933 14.5 12 14.5C10.067 14.5 8.5 12.933 8.5 11C8.5 9.067 10.067 7.5 12 7.5C13.933 7.5 15.5 9.067 15.5 11Z"
             stroke="currentColor"
             stroke-width="1.5"
-            vector-effect="non-scaling-stroke"></path></svg
-        ><p class="text-gray-1k font-normal text-xs">
+            vector-effect="non-scaling-stroke"></path>
+        </svg>
+        <p class="text-gray-1k font-normal text-xs">
           {user.address.city}, {user.address.country}
         </p>
-      </div><div class="flex gap-1 items-center">
+      </div>
+      <div class="flex gap-1 items-center">
         <svg
           width="16"
           height="16"
@@ -234,27 +233,40 @@ const { user } = Astro.props as { user: PeerlistData };
             stroke-width="1.5"
             stroke-linecap="round"
             vector-effect="non-scaling-stroke"></path></svg
-        ><a
+        >
+        <a
           target="_blank"
           rel="noreferrer nofollow ugc"
           title={user.website}
           href={user.website}
-          ><p class="text-gray-1k font-normal text-xs hover:underline">
-            {user.website?.split("://")[1]}
-          </p></a
         >
+          <p class="text-gray-1k font-normal text-xs hover:underline">
+            {user.website?.split("://")[1]}
+          </p>
+        </a>
       </div>
-    </div><div
+    </div>
+    <div
       class="w-full flex flex-wrap items-center gap-1 sm:gap-2 hide-scrollbar justify-center"
     >
       {
         user.skills.map((skill) => (
-          <button
-            type="button"
-            class="text-xs font-medium leading-4 border border-border rounded-lg text-gray-1k inline-flex items-center justify-center gap-x-1 px-2 py-1 h-6 box-border hover:shadow-tag-hover transition-all ease-in-out select-none group/tag bg-gray-00"
-          >
+          <span class="text-xs font-medium leading-4 border border-border rounded-lg text-gray-1k inline-flex items-center justify-center gap-x-1 px-2 py-1 h-6 box-border hover:shadow-tag-hover transition-all ease-in-out select-none group/tag bg-gray-00">
+            <img
+              src={
+                "https://d26c7l40gvbbg2.cloudfront.net/tool_icons/" +
+                skill.name?.toLowerCase().replaceAll(" ", "_") +
+                ".svg"
+              }
+              alt={`${skill.name} icon`}
+              width="14"
+              height="14"
+              class="object-cover hidden"
+              id={`${skill.name}-icon`}
+              onload={`showImg(this)`}
+            />
             <span>{skill.name}</span>
-          </button>
+          </span>
         ))
       }
     </div>

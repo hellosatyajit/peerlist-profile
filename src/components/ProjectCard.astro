@@ -1,0 +1,188 @@
+---
+import type { Project } from "../utils/types";
+
+interface Props {
+  project: Project;
+  class?: string;
+}
+
+const { project, class: additionalClass } = Astro.props;
+---
+
+<article
+  class={`w-full outline-none h-full relative group/projectCard overflow-hidden px-4 py-4 flex items-center transition-all duration-200 cursor-pointer hover:bg-gray-25 sm:px-6 ${additionalClass}`}
+>
+  <a
+    class="h-full flex flex-1 flex-row items-center"
+    href={project.url ?? `https://peerlist.io/${project.projectURL}`}
+  >
+    <div
+      class="overflow-hidden border relative border-border rounded-xl shrink-0 sm:aspect-video aspect-square h-16"
+    >
+      <img
+        alt={project.title}
+        loading="lazy"
+        decoding="async"
+        data-nimg="fill"
+        class="duration-500 ease-in-out group-hover:opacity-75 sm:scale-100 sm:blur-0 sm:grayscale-0 object-cover"
+        src={project?.images?.[0] ??
+          "https://dqy38fnwh4fqs.cloudfront.net/website/companyempty.png"}
+        style="position: absolute; height: 100%; width: 100%; inset: 0px; color: transparent;"
+      />
+    </div>
+    <div class="flex pl-4 flex-col mr-4 items-center justify-center w-full">
+      <div class="w-full">
+        <p
+          class="text-gray-1k font-semibold text-sm paragraph-clamp1 group-hover/projectCard:underline flex"
+        >
+          {project.title}
+        </p>
+        <p
+          class="text-gray-1k font-normal text-sm mt-0.5 paragraph-clamp1 break-all"
+        >
+          {project.tagline}
+        </p>
+        <span class="flex gap-2 mt-1 items-center flex-wrap">
+          {
+            project.commentCount && project.commentCount > 0 && (
+              <span class="flex gap-0.5 items-center text-gray-500">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.09881 19C4.7987 18.8721 3.82475 18.4816 3.17157 17.8284C2 16.6569 2 14.7712 2 11V10.5C2 6.72876 2 4.84315 3.17157 3.67157C4.34315 2.5 6.22876 2.5 10 2.5H14C17.7712 2.5 19.6569 2.5 20.8284 3.67157C22 4.84315 22 6.72876 22 10.5V11C22 14.7712 22 16.6569 20.8284 17.8284C19.6569 19 17.7712 19 14 19C13.4395 19.0125 12.9931 19.0551 12.5546 19.155C11.3562 19.4309 10.2465 20.0441 9.14987 20.5789C7.58729 21.3408 6.806 21.7218 6.31569 21.3651C5.37769 20.6665 6.29454 18.5019 6.5 17.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    vector-effect="non-scaling-stroke"
+                  />
+                </svg>
+                <p class="text-gray-500 font-normal text-xs">
+                  {project.commentCount}
+                </p>
+              </span>
+            )
+          }
+          {
+            project.bookmarkCount && project.bookmarkCount > 0 && (
+              <span class="flex gap-0.5 items-center text-gray-500">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4 17.9808V9.70753C4 6.07416 4 4.25748 5.17157 3.12874C6.34315 2 8.22876 2 12 2C15.7712 2 17.6569 2 18.8284 3.12874C20 4.25748 20 6.07416 20 9.70753V17.9808C20 20.2867 20 21.4396 19.2272 21.8523C17.7305 22.6514 14.9232 19.9852 13.59 19.1824C12.8168 18.7168 12.4302 18.484 12 18.484C11.5698 18.484 11.1832 18.7168 10.41 19.1824C9.0768 19.9852 6.26947 22.6514 4.77285 21.8523C4 21.4396 4 20.2867 4 17.9808Z"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    vector-effect="non-scaling-stroke"
+                  />
+                </svg>
+                <p class="text-gray-500 font-normal text-xs">
+                  {project.bookmarkCount}
+                </p>
+              </span>
+            )
+          }
+          {
+            project.categories && project.categories.length > 0 && (
+              <span class="sm:flex gap-0.5 items-center text-gray-500 hidden">
+                <span class="mr-0.5">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M17.5 5.00024C18.3284 5.00024 19 5.67182 19 6.50024C19 7.32867 18.3284 8.00024 17.5 8.00024C16.6716 8.00024 16 7.32867 16 6.50024C16 5.67182 16.6716 5.00024 17.5 5.00024Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      vector-effect="non-scaling-stroke"
+                    />
+                    <path
+                      d="M2.77423 11.1439C1.77108 12.2643 1.7495 13.9546 2.67016 15.1437C4.49711 17.5033 6.49674 19.5029 8.85633 21.3298C10.0454 22.2505 11.7357 22.2289 12.8561 21.2258C15.8979 18.5022 18.6835 15.6559 21.3719 12.5279C21.6377 12.2187 21.8039 11.8397 21.8412 11.4336C22.0062 9.63798 22.3452 4.46467 20.9403 3.05974C19.5353 1.65481 14.362 1.99377 12.5664 2.15876C12.1603 2.19608 11.7813 2.36233 11.472 2.62811C8.34412 5.31646 5.49781 8.10211 2.77423 11.1439Z"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      vector-effect="non-scaling-stroke"
+                    />
+                    <path
+                      d="M7 14.0002L9.99998 17.0002"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      vector-effect="non-scaling-stroke"
+                    />
+                  </svg>
+                </span>
+                <p class="text-gray-500 font-normal text-xs paragraph-clamp1">
+                  {project.categories?.map((category, index) => (
+                    <span>
+                      {`${category.name}${index !== (project.categories?.length ?? 0) - 1 ? "," : ""}`}
+                    </span>
+                  ))}
+                </p>
+              </span>
+            )
+          }
+        </span>
+      </div>
+    </div>
+  </a>
+  {
+    project.upvotesCount && project.upvotesCount > 0 ? (
+      <div class="group-hover:shadow-[-2px_4px_16px_rgba(0,0,0,0.05)] rounded-lg upvote-icon-wrapper right-4">
+        <div class="h-14 w-12 bg-gray-50 rounded-xl border hover:shadow-10 transition-colors duration-200 border-green-300 text-green-300 hover:border-green-400">
+          <div class="h-full w-full flex flex-col justify-center relative overflow-hidden rounded-lg">
+            <div class="w-6 h-6 flex z-[1] items-center justify-center mx-auto rounded-full upvote-icon-button">
+              <div style="opacity: 1; filter: blur(0px); transform: none;">
+                <div class="lf-player-container">
+                  <div
+                    id="lottie"
+                    style="background: transparent; margin: 2px auto 0px; outline: none; overflow: hidden; height: 28px; width: 28px; display: none;"
+                  />
+                </div>
+              </div>
+              <div
+                class="transition-transform transform group-hover:-translate-y-0.5"
+                style="opacity: 1; filter: blur(0px); transform: none;"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="#6fcf97"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12.0017 21.9982H10.0475C9.03149 21.9982 7.32508 22.1082 7.32508 20.6026V13.5667C7.32508 13.0684 7.01695 12.7268 6.43689 12.7268H2.59948C1.43841 12.7268 2.24946 11.8116 2.66039 11.4193C3.07133 11.027 6.69819 7.22967 6.69819 7.22967C6.69819 7.22967 10.941 2.78849 11.4091 2.34169C11.8772 1.8949 12.1044 1.87739 12.5909 2.34169C13.0774 2.806 17.3018 7.22967 17.3018 7.22967C17.3018 7.22967 20.9287 11.027 21.3396 11.4193C21.7505 11.8116 22.5616 12.7268 21.4005 12.7268H17.5631C16.983 12.7268 16.6749 13.0684 16.6749 13.5667V20.6026C16.6749 22.1082 14.9685 21.9982 13.9525 21.9982H12.0017Z"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    vector-effect="non-scaling-stroke"
+                  />
+                </svg>
+              </div>
+            </div>
+            <span class="font-semibold z-[1] text-sm text-center">
+              {project.upvotesCount}
+            </span>
+          </div>
+        </div>
+      </div>
+    ) : null
+  }
+</article>

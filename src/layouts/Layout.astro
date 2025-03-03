@@ -3,7 +3,7 @@ import Footer from "../components/Footer.astro";
 import Header from "../components/Header.astro";
 import Navbar from "../components/Navbar.astro";
 import "../styles/global.css";
-import type { PeerlistData } from "../utils/peerlist";
+import type { PeerlistData } from "../utils/types";
 import { SITE_DOMAIN } from "../utils/peerlist";
 const { title, path, user } = Astro.props as {
   title: string;
@@ -77,6 +77,11 @@ const { title, path, user } = Astro.props as {
       </div>
     </div>
   </body>
+  <script is:inline>
+    function showImg(img) {
+      img.style.display = "block";
+    }
+  </script>
 </html>
 
 <style>
