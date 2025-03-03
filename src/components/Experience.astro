@@ -1,0 +1,419 @@
+---
+import { format, differenceInMonths, differenceInYears } from "date-fns";
+import type { PeerlistData } from "../utils/types";
+
+interface Props {
+  experience: PeerlistData["experience"];
+}
+
+const { experience } = Astro.props;
+
+const capitalize = (str: string) => {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+const calculateTotalDuration = (
+  dateRanges: { startDate: string; endDate: string }[]
+) => {
+  const sortedRanges = [...dateRanges].sort(
+    (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+  );
+
+  let totalMonths = 0;
+  let currentEndDate: Date | null = null;
+
+  sortedRanges.forEach(({ startDate, endDate }) => {
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : new Date();
+
+    if (!currentEndDate || start > currentEndDate) {
+      const months = differenceInMonths(end, start);
+      totalMonths += months;
+    } else {
+      if (end > currentEndDate) {
+        const additionalMonths = differenceInMonths(end, currentEndDate);
+        totalMonths += additionalMonths;
+      }
+    }
+
+    if (!currentEndDate || end > currentEndDate) {
+      currentEndDate = end;
+    }
+  });
+
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+
+  return `${years} year${years !== 1 ? "s" : ""} ${months} month${months !== 1 ? "s" : ""}`;
+};
+
+const showJobDuration = (startDate: string, endDate?: string) => {
+  const start = new Date(startDate);
+  const end = endDate ? new Date(endDate) : new Date();
+
+  const yearsDiff = differenceInYears(end, start);
+  const monthsDiff = differenceInMonths(end, start);
+
+  const adjustedMonthsDiff =
+    monthsDiff <= 12 ? monthsDiff : Math.floor(monthsDiff / 12) + 1;
+
+  return `(${yearsDiff > 0 ? `${yearsDiff} yr, ` : ""}${adjustedMonthsDiff} m)`;
+};
+
+const groupedExperiences = experience.reduce(
+  (acc, exp) => {
+    const companyId = exp.companyId || exp.organizationName;
+    if (!acc[companyId]) {
+      acc[companyId] = {
+        companyName: exp.organizationName,
+        logo: exp.logo,
+        profileHandle: exp.profileHandle,
+        experiences: [],
+      };
+    }
+    acc[companyId].experiences.push(exp);
+    return acc;
+  },
+  {} as Record<
+    string,
+    {
+      companyName: string;
+      logo?: string;
+      profileHandle?: string;
+      experiences: typeof experience;
+    }
+  >
+);
+
+const sortedCompanies = Object.values(groupedExperiences).sort((a, b) => {
+  const aLatest = new Date(
+    Math.max(...a.experiences.map((e) => new Date(e.startDate).getTime()))
+  );
+  const bLatest = new Date(
+    Math.max(...b.experiences.map((e) => new Date(e.startDate).getTime()))
+  );
+  return bLatest.getTime() - aLatest.getTime();
+});
+
+sortedCompanies.forEach((company) => {
+  company.experiences.sort((a, b) => {
+    if (a.endDate && b.endDate) {
+      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+    } else if (!a.endDate && b.endDate) {
+      return -1;
+    } else if (a.endDate && !b.endDate) {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
+});
+---
+
+<div class="mb-10 sm:pb-0 pb-4 sm:mb-20">
+  <div class="flex items-center justify-between">
+    <div class="w-full flex items-center justify-between">
+      <p class="text-gray-1k font-semibold text-base">Experience</p>
+      <span
+        class="text-xs font-semibold leading-4 px-2 py-0.5 rounded-md h-5 inline-flex items-center justify-center text-center w-fit text-gray-700 bg-gray-100 dark:bg-gray-50 ml-2 sm:ml-4"
+      >
+        {calculateTotalDuration(experience)}
+      </span>
+    </div>
+  </div>
+  <div class="mt-6">
+    {
+      sortedCompanies.map((company) => (
+        <div class="group">
+          <div class="w-full flex justify-between">
+            <div class="flex items-center gap-2 overflow-hidden">
+              <span class="max-w-fit">
+                <a
+                  class="group/company"
+                  target="_blank"
+                  rel="noreferrer nofollow ugc"
+                  title={company.companyName}
+                  href={
+                    company.profileHandle
+                      ? `https://peerlist.io/company/${company.profileHandle}`
+                      : undefined
+                  }
+                >
+                  <div class="flex items-center gap-2 overflow-hidden">
+                    <img
+                      alt={company.companyName}
+                      loading="lazy"
+                      width="24"
+                      height="24"
+                      decoding="async"
+                      data-nimg="1"
+                      class="rounded-full bg-center bg-no-repeat bg-cover bg-gray-00 flex justify-center items-center object-contain hover:opacity-90 transition-opacity border border-border flex-grow"
+                      src={
+                        company.logo ??
+                        "https://dqy38fnwh4fqs.cloudfront.net/website/companyempty.png"
+                      }
+                      style="color: transparent; width: 24px; height: 24px;"
+                    />
+                    <p class="text-gray-1k font-normal text-sm group-hover/company:underline truncate">
+                      {company.companyName}
+                    </p>
+                  </div>
+                </a>
+              </span>
+            </div>
+          </div>
+          {company.experiences.map((experience, index) => (
+            <div
+              class={`pl-8 relative w-full transition-colors duration-200 flex flex-col items-center ${
+                index === company.experiences.length - 1 ? "pb-6" : "pb-4"
+              }`}
+            >
+              {((index !== company.experiences.length - 1 &&
+                company.experiences.length > 1) ||
+                company.experiences.length === 1) && (
+                <div
+                  class={`absolute w-0.5 ${
+                    experience.endDate ? "bg-gray-300" : "bg-green-300"
+                  } h-[10px] left-[11px] z-20`}
+                />
+              )}
+              {index !== company.experiences.length - 1 && (
+                <div
+                  class={`absolute w-0.5 ${
+                    company.experiences[index + 1].endDate
+                      ? "bg-gray-300"
+                      : "bg-green-300"
+                  } ${
+                    index === 0 ? "h-full" : "h-[calc(100%-2px)] top-2"
+                  } left-[11px] z-10`}
+                />
+              )}
+              <div class={`w-full flex relative ${index === 0 ? "pt-2" : ""}`}>
+                <div
+                  class={`w-4 h-3 border-l-2 border-b-2 rounded-bl-lg absolute -left-[21px] z-30 ${
+                    experience.endDate ? "border-gray-300" : "border-green-300"
+                  }`}
+                />
+                <div class="w-full flex">
+                  <div class="group w-full duration-300 ease-in-out rounded-2xl outline-none transition-shadow group b-0">
+                    <label
+                      for={experience.id}
+                      class={`w-full group flex items-center relative text-left p-0 ${
+                        experience.description || experience.skills.length > 0
+                          ? "cursor-pointer"
+                          : ""
+                      }`}
+                    >
+                      <div class="w-full flex flex-col gap-2">
+                        <div class="flex items-center justify-between w-full">
+                          <div class="w-full flex flex-col gap-1">
+                            <div class="flex items-center gap-2">
+                              <p class="text-gray-1k font-semibold text-sm">
+                                {experience.position}
+                              </p>
+                              {experience.promoted && (
+                                <div title="Promoted" class="cursor-pointer">
+                                  <span class="sr-only">Promoted</span>
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      fill-rule="evenodd"
+                                      clip-rule="evenodd"
+                                      d="M12.008 18.636L6.694 21.43a1 1 0 01-1.451-1.055l1.015-5.918-4.304-4.19a1 1 0 01.554-1.705L8.446 7.7l2.657-5.384a1 1 0 011.794 0l2.657 5.384 5.938.86a1 1 0 01.554 1.707l-4.304 4.19 1.015 5.915a1 1 0 01-1.452 1.054l-5.297-2.791z"
+                                      fill="url(#paint0_linear_18584_30961)"
+                                    />
+                                    <defs>
+                                      <linearGradient
+                                        id="paint0_linear_18584_30961"
+                                        x1="12"
+                                        y1="0.5"
+                                        x2="12"
+                                        y2="22.3726"
+                                        gradientUnits="userSpaceOnUse"
+                                      >
+                                        <stop stop-color="#FF9145" />
+                                        <stop offset="1" stop-color="#D85800" />
+                                      </linearGradient>
+                                    </defs>
+                                  </svg>
+                                </div>
+                              )}
+                              {experience.verified && (
+                                <div
+                                  title="Verified by Peerlist"
+                                  class="cursor-pointer"
+                                >
+                                  <span class="sr-only">
+                                    Verified by Peerlist
+                                  </span>
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <rect
+                                      x="1"
+                                      y="1"
+                                      width="22"
+                                      height="22"
+                                      rx="11"
+                                      fill="rgb(var(--gray-00))"
+                                    />
+                                    <path
+                                      d="M10.0966 3.00292C11.0213 1.66569 12.9785 1.66569 13.9031 3.00292V3.00292C14.4633 3.81304 15.4647 4.1818 16.4084 3.92552V3.92552C17.9663 3.50249 19.4656 4.77536 19.3244 6.40108V6.40108C19.2388 7.38597 19.7716 8.31972 20.6574 8.73719V8.73719C22.1196 9.42629 22.4594 11.3764 21.3184 12.53V12.53C20.6272 13.2288 20.4421 14.2906 20.8554 15.1865V15.1865C21.5377 16.6653 20.5591 18.3802 18.9522 18.5218V18.5218C17.9787 18.6076 17.1624 19.3006 16.9099 20.2557V20.2557C16.493 21.8323 14.6539 22.5095 13.3329 21.5729V21.5729C12.5327 21.0055 11.4671 21.0055 10.6668 21.5729V21.5729C9.3459 22.5095 7.50675 21.8323 7.08991 20.2557V20.2557C6.83738 19.3006 6.02104 18.6076 5.04754 18.5218V18.5218C3.44062 18.3802 2.46203 16.6653 3.14431 15.1865V15.1865C3.55764 14.2906 3.37259 13.2288 2.68134 12.53V12.53C1.54031 11.3764 1.88017 9.42629 3.34233 8.73719V8.73719C4.22812 8.31972 4.76095 7.38597 4.67539 6.40108V6.40108C4.53415 4.77536 6.03344 3.50249 7.59131 3.92552V3.92552C8.53509 4.1818 9.53648 3.81304 10.0966 3.00292V3.00292Z"
+                                      fill="url(#paint0_linear_20165_50891)"
+                                    />
+                                    <g clip-path="url(#clip0_20165_50891)">
+                                      <path
+                                        d="M6.16663 12.2778L8.43107 14.5422C8.49357 14.6047 8.57829 14.6397 8.66663 14.6397C8.75496 14.6397 8.83968 14.6047 8.90218 14.5422L10.3333 13.1111M14.2222 9.22223L12 11.4445"
+                                        stroke="#fff"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                      />
+                                      <path
+                                        d="M9.22223 12L11.7645 14.5422C11.827 14.6047 11.9117 14.6397 12 14.6397C12.0883 14.6397 12.1731 14.6047 12.2356 14.5422L17.5556 9.22223"
+                                        stroke="#fff"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                      />
+                                    </g>
+                                    <rect
+                                      x="1"
+                                      y="1"
+                                      width="22"
+                                      height="22"
+                                      rx="11"
+                                      stroke="rgb(var(--gray-00))"
+                                      stroke-width="2"
+                                    />
+                                    <defs>
+                                      <linearGradient
+                                        id="paint0_linear_20165_50891"
+                                        x1="11.9999"
+                                        y1="2"
+                                        x2="11.9999"
+                                        y2="22"
+                                        gradientUnits="userSpaceOnUse"
+                                      >
+                                        <stop stop-color="#27AE60" />
+                                        <stop offset="1" stop-color="#1E874B" />
+                                      </linearGradient>
+                                      <clipPath id="clip0_20165_50891">
+                                        <rect
+                                          width="13.3333"
+                                          height="13.3333"
+                                          fill="white"
+                                          transform="translate(5.33331 5.33334)"
+                                        />
+                                      </clipPath>
+                                    </defs>
+                                  </svg>
+                                </div>
+                              )}
+                            </div>
+                            <p class="text-gray-500 text-xs">
+                              <span class="font-semibold">
+                                {format(experience.startDate, "MMM yyyy")} -{" "}
+                                {experience.endDate
+                                  ? format(experience.endDate, "MMM yyyy")
+                                  : "Present"}
+                              </span>
+                              <span class="font-semibold">
+                                {showJobDuration(
+                                  experience.startDate,
+                                  experience.endDate
+                                )}
+                              </span>
+                              {(experience.location.city ||
+                                experience.location.country) && (
+                                <span class="font-normal capitalize">
+                                  •{" "}
+                                  {experience.location.city
+                                    ? `${experience.location.city}, `
+                                    : ""}
+                                  {capitalize(experience.location.country!)}
+                                </span>
+                              )}
+                              {experience.jobType && (
+                                <span class="font-normal capitalize">
+                                  • {experience.jobType}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      {(experience.description ||
+                        experience.skills.length > 0) && (
+                        <div class="absolute right-4 text-gray-400 group-hover:text-gray-1k w-6">
+                          <div class="group-hover:border-border justify-center shrink-0 flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 disabled:cursor-not-allowed gap-x-1 active:shadow-none text-xs leading-4 py-1 h-6 rounded-lg w-6 text-gray-1k bg-gray-00 border-transparent hover:border-border disabled:bg-gray-100 disabled:hover:border-transparent cursor-pointer">
+                            <span class="">
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M6 9L12 15L18 9"
+                                  stroke="currentColor"
+                                  stroke-width="1.5"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  vector-effect="non-scaling-stroke"
+                                />
+                              </svg>
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </label>
+                    <input
+                      id={experience.id}
+                      type="checkbox"
+                      class="peer sr-only"
+                    />
+                    {(experience.description ||
+                      experience.skills.length > 0) && (
+                      <div class="overflow-hidden h-0 peer-checked:overflow-scroll peer-checked:h-auto transition-[height] duration-300 ease-in-out hide-scrollbar">
+                        <div class="">
+                          {experience.description && (
+                            <div
+                              class="break-words text-gray-1k text-gray leading-4 pt-2 sm:leading-6 text-xs sm:text-sm job-description cursor-pointer"
+                              role="none"
+                            >
+                              <ul
+                                class="list-disc break-word pl-0"
+                                set:html={experience.description}
+                              />
+                            </div>
+                          )}
+                          <div class="flex gap-2 pt-2 flex-wrap items-center overflow-x-scroll lg:overscroll-auto">
+                            {experience.skills.map((skill) => (
+                              <span class="text-xs font-medium leading-4 border border-border rounded-lg text-gray-1k inline-flex items-center justify-center gap-x-1 px-2 py-1 h-6 box-border hover:shadow-tag-hover transition-all ease-in-out select-none group/tag bg-gray-00">
+                                <span>{skill.name}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</div>

@@ -131,12 +131,12 @@ const { user } = Astro.props as { user: PeerlistData };
         data-for="profile-verification-info"
         data-effect="solid"
         class="flex items-center cursor-default"
-        ><h1 class="font-semibold text-lg">{user.displayName}</h1><div
-          class="pl-1 cursor-pointer"
-        >
+      >
+        <h1 class="font-semibold text-lg">{user.displayName}</h1>
+        <div class="pl-1 cursor-pointer">
           {
             user.verified && (
-              <div>
+              <div title="Verified by Peerlist">
                 <span class="sr-only">verified</span>
                 <svg
                   width="20"

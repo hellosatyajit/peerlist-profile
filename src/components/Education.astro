@@ -1,0 +1,46 @@
+---
+import { format } from "date-fns";
+import type { PeerlistData } from "../utils/types";
+
+interface Props {
+  education: PeerlistData["education"];
+}
+
+const { education } = Astro.props;
+
+const sortedEducation = education.sort(
+  (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+);
+---
+
+<div class="mb-10 sm:pb-0 pb-4 sm:mb-20">
+  <div class="flex items-center justify-between">
+    <div class="w-full flex items-center justify-between">
+      <p class="text-gray-1k font-semibold text-base">Education</p>
+    </div>
+  </div>
+  <div class="flex flex-col mt-6 sm:gap-6 gap-4">
+    {
+      sortedEducation.map((education) => (
+        <div class="flex w-full justify-between items-start group gap-2">
+          <div class="w-full flex flex-col gap-1">
+            <div class="flex items-center md:justify-start w-full gap-1">
+              <p class="text-gray-1k font-semibold text-sm capitalize">
+                {education.organizationName}
+              </p>
+            </div>
+            <p class="text-gray-1k font-normal text-xs">
+              {education.title}, {education.major}
+            </p>
+            <p class="text-gray-500 font-normal text-xs">
+              {format(education.startDate, "yyyy")} -{" "}
+              {format(education.endDate, "yyyy")}
+            </p>
+            <div class="self-start block sm:hidden" />
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</div>
+
