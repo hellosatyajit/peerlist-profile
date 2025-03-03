@@ -1,231 +1,78 @@
 import * as cheerio from "cheerio";
+import type {
+  PeerlistData,
+  ProductHuntProject,
+  MediumResponse,
+  HashnodeResponse,
+  DevToResponse,
+  SubstackResponse,
+  Blogs,
+} from "./types";
 
 const USER_NAME = import.meta.env.PEERLIST_USERNAME;
 export const SITE_DOMAIN = import.meta.env.SITE_DOMAIN;
 
-export interface PeerlistData {
-  follower: boolean;
-  following: boolean;
-  peer: boolean;
-  isPeers: boolean;
-  certificationsCount: number;
-  communityWorkCount: number;
-  companyVerifiedAt: string;
-  displayName: string;
-  educationCount: number;
-  collectionsCount: number;
-  enabled: boolean;
-  experienceCount: number;
-  projectCount: number;
-  firstName: string;
-  headline: string;
-  address: {
-    country: string;
-    city: string;
-    countryCode: string;
-  };
-  inboxPreferences: null;
-  integrations: {
-    productHunt?: { username: string };
-    github?: { username: string; verified: boolean };
-    medium?: { username: string };
-    hashnode?: { username: string };
-    devto?: { username: string };
-    substack?: { username: string };
-  };
-  integrationsOrder: Array<{ name: string }>;
-  lastName: string;
-  preferredPronoun: string;
-  profileHandle: string;
-  profilePicture: string;
-  projectsOrder: string[];
-  published: boolean;
-  skills: Array<{
-    id?: string;
+export interface Project {
+  title: string;
+  slug: string;
+  tagline?: string;
+  url?: string;
+  tags: string[];
+  categories?: Array<{
     name: string;
-    label: string;
+    id: string;
+    title: string;
+    description: string;
   }>;
-  socialLinks: {
-    Twitter?: string;
-    Instagram?: string;
-    LinkedIn?: string;
-    ProductHunt?: string;
-  };
-  totalExperienceYears: number;
-  verified: boolean;
-  website?: string;
-  calendar: string;
+  images?: Array<string>;
+  isOpenSource?: boolean;
   createdAt: string;
-  publishedAt: string;
-  id: string;
-  projects: Array<{
-    title: string;
+  hackathonInfo: {
     slug: string;
-    tagline?: string;
-    url?: string;
-    tags: string[];
-    categories?: Array<{
-      name: string;
-      id: string;
-      title: string;
-      description: string;
-    }>;
-    images?: Array<string>;
-    isOpenSource?: boolean;
-    createdAt: string;
-    hackathonInfo: {
-      slug: string;
-      submittedAt: null;
-    } | null;
-    openForCollab: boolean;
-    commentsUpdatedAt: string;
-    id: string;
-    teamName?: string;
-    createdBy: {
-      displayName: string;
-      firstName: string;
-      headline: string;
-      lastName: string;
-      profileHandle: string;
-      profilePicture: string;
-      companyVerifiedAt: string;
-      verified: boolean;
-      id: string;
-      canSuperUpvote: boolean;
-    };
-    creator: {
-      displayName: string;
-      firstName: string;
-      headline: string;
-      lastName: string;
-      profileHandle: string;
-      profilePicture: string;
-      companyVerifiedAt: string;
-      verified: boolean;
-      id: string;
-      canSuperUpvote: boolean;
-    };
-    projectURL: string;
-    collaborators: Array<{
-      firstName: string;
-      lastName: string;
-      displayName: string;
-      profilePicture: string;
-      headline: string;
-      profileHandle: string;
-      id: string;
-    }>;
-    upvotesCount?: number;
-    isUpvoted?: boolean;
-    commentCount?: number;
-    bookmarkCount?: number;
-  }>;
-  education: Array<{
-    createdAt: string;
-    title: string;
-    startDate: string;
-    endDate: string;
-    organizationName: string;
-    courseName?: string;
-    skills: Array<{ name: string; label: string }>;
-    current: boolean;
-    promoted: boolean;
-    verifiedAt: null | string;
-    uuid: string;
-    isExpiring: boolean;
+    submittedAt: null;
+  } | null;
+  openForCollab: boolean;
+  commentsUpdatedAt: string;
+  id: string;
+  teamName?: string;
+  createdBy: {
+    displayName: string;
+    firstName: string;
+    headline: string;
+    lastName: string;
+    profileHandle: string;
+    profilePicture: string;
+    companyVerifiedAt: string;
     verified: boolean;
     id: string;
-    instituteName: string;
-    institution: string;
-    degree: string;
-    major?: string;
-    startYear: number;
-    endYear: number;
-  }>;
-  experience: Array<{
-    createdAt: string;
-    title: string;
-    position: string;
-    description: string;
-    startDate: string;
-    endDate: string;
-    location: {
-      city?: string;
-      country?: string;
-      code?: string;
-    } & ({ city: string } | { country: string });
-    organizationName: string;
-    jobType: string;
-    skills: Array<{
-      id?: string;
-      name: string;
-      label: string;
-    }>;
-    current: boolean;
-    promoted: boolean;
-    verifiedAt: null | string;
-    website?: string;
-    uuid: string;
-    isExpiring: boolean;
+    canSuperUpvote: boolean;
+  };
+  creator: {
+    displayName: string;
+    firstName: string;
+    headline: string;
+    lastName: string;
+    profileHandle: string;
+    profilePicture: string;
+    companyVerifiedAt: string;
     verified: boolean;
-    role: string;
     id: string;
-    companyId?: string;
-    company: string;
-    companyName?: string;
-    logo?: string;
-    profileHandle?: string;
-    isClaimed?: boolean;
-    tagline?: string;
-    companyVerifiedAt?: string;
-    companyVerifiedBy?: string;
-    companyVerification?: {
-      approvedBy: {
-        at: string;
-        id: string;
-      };
-    };
-    workSkills: Array<{
-      id?: string;
-      name: string;
-      label: string;
-    }>;
-    jobRole: string;
-  }>;
-  collections: Array<{
-    title: string;
-    type: "BOOKS" | "VIDEOS" | "PODCASTS" | "LINKS";
-    createdBy: string;
-    itemsCount: number;
-    deletedAt: null;
-    priority: number;
-    subscribersCount: number;
-    items: Array<{
-      id: string;
-      title: string;
-      image: string;
-      type: string;
-      description: string;
-      createdAt: string;
-      author: string;
-      url: string;
-    }>;
-    createdAt: string;
-    updatedAt: string;
+    canSuperUpvote: boolean;
+  };
+  projectURL: string;
+  collaborators: Array<{
+    firstName: string;
+    lastName: string;
+    displayName: string;
+    profilePicture: string;
+    headline: string;
+    profileHandle: string;
     id: string;
   }>;
-  numPosts: number;
-  blogCount: number;
-  jobsCount: number;
-  networkCount: {
-    followers: number;
-    peers: number;
-  };
-  ogDetails: {
-    title: string;
-    description: string;
-    tags: string[];
-  };
+  upvotesCount?: number;
+  isUpvoted?: boolean;
+  commentCount?: number;
+  bookmarkCount?: number;
 }
 
 async function fetchFromPeerlist(
@@ -264,19 +111,6 @@ export async function fetchUserCollection(): Promise<PeerlistData> {
   const jsonData = await fetchFromPeerlist("/collections");
 
   return jsonData.user;
-}
-
-interface ProductHuntProject {
-  node: {
-    id: string;
-    name: string;
-    tagline: string;
-    thumbnail: {
-      url: string;
-    };
-    votesCount: number;
-    url: string;
-  };
 }
 
 export async function fetchProductHuntProjects(
@@ -320,19 +154,6 @@ export async function fetchProductHuntProjects(
   return data?.data?.user?.madePosts?.edges || [];
 }
 
-interface MediumPost {
-  title: string;
-  pubDate: string;
-  link: string;
-  guid: string;
-  author: string;
-  thumbnail: string;
-  description: string;
-  content: string;
-  enclosure: {};
-  categories: Array<string>;
-}
-
 function getImageSources(description: string) {
   const $ = cheerio.load(description);
   const imgSources: string[] = [];
@@ -345,137 +166,195 @@ function getImageSources(description: string) {
   return imgSources.length > 0 ? imgSources[0] : "";
 }
 
-export async function fetchMediumPosts(
-  username?: string
-): Promise<MediumPost[]> {
-  if (!username) {
-    return [];
+export async function fetchMediumPosts(username?: string): Promise<Blogs> {
+  try {
+    if (!username) {
+      throw new Error("Username is required");
+    }
+
+    const response = await fetch(
+      `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@${username}`
+    );
+
+    const data: MediumResponse = await response.json();
+
+    const blogs = data?.items?.map((post) => ({
+      title: post.title,
+      url: post.link,
+      coverImage: getImageSources(post.description),
+    }));
+
+    return {
+      publication: {
+        name: "Medium",
+        url: `https://medium.com/@${username}`,
+      },
+      blogs,
+    };
+  } catch (error) {
+    console.error("Error fetching Medium posts:", error);
+    return {
+      publication: {
+        name: "Medium",
+      },
+      blogs: [],
+    };
   }
-
-  const response = await fetch(
-    `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@${username}`
-  );
-
-  const data = await response.json();
-
-  const formattedPosts = data?.items?.map((post: MediumPost) => ({
-    ...post,
-    thumbnail: getImageSources(post.description),
-  }));
-
-  return formattedPosts || [];
 }
 
-interface HashnodePost {
-  url: string;
-  title: string;
-  image: string;
-}
+export async function fetchHashnodePosts(username?: string): Promise<Blogs> {
+  try {
+    if (!username) {
+      throw new Error("Username is required");
+    }
 
-export async function fetchHashnodePosts(
-  username?: string
-): Promise<HashnodePost[]> {
-  if (!username) {
-    return [];
-  }
-
-  const query = `
-    query Publication($host: String = "${username}.hashnode.dev") {
-      publication(host: $host) {
-        posts(first: 10) {
-          edges {
-            node {
-              url
-              title
-              coverImage {
+    const query = `
+      query Publication($host: String = "${username}.hashnode.dev") {
+        publication(host: $host) {
+          posts(first: 10) {
+            edges {
+              node {
                 url
+                title
+                coverImage {
+                  url
+                }
               }
             }
           }
         }
       }
-    }
-  `;
+    `;
 
-  const response = await fetch("https://gql.hashnode.com", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query }),
-  });
+    const response = await fetch("https://gql.hashnode.com", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query }),
+    });
 
-  const data = await response.json();
+    const data: HashnodeResponse = await response.json();
 
-  const formattedPosts = data?.data?.publication?.posts?.edges?.map(
-    (post: { node: any }) => ({
-      ...post.node,
-      image: post.node.coverImage.url,
-    })
-  );
+    const blogs = data?.data?.publication?.posts?.edges?.map(
+      (post: { node: any }) => ({
+        title: post.node.title,
+        url: post.node.url,
+        coverImage: post.node.coverImage.url,
+      })
+    );
 
-  return formattedPosts || [];
-}
-
-interface DevToPost {
-  title: string;
-  cover_image: string;
-  url: string;
-}
-
-export const fetchDevToPosts = async (
-  username?: string
-): Promise<DevToPost[]> => {
-  if (!username) {
-    return [];
-  }
-
-  const response = await fetch(
-    `https://dev.to/api/articles?username=${username}&per_page=10`
-  );
-
-  const data = await response.json();
-
-  return data || [];
-};
-
-interface Substack {
-  publication: {
-    name: string;
-    logo: string;
-  } | null;
-  posts: Array<{
-    title: string;
-    url: string;
-    cover_image: string;
-  }>;
-}
-
-export const fetchSubstackPosts = async (
-  username?: string
-): Promise<Substack> => {
-  if (!username) {
     return {
-      publication: null,
-      posts: [],
+      publication: {
+        name: "Hashnode",
+        url: `https://${username}.hashnode.dev`,
+      },
+      blogs,
+    };
+  } catch (error) {
+    console.error("Error fetching Hashnode posts:", error);
+    return {
+      publication: {
+        name: "Hashnode",
+      },
+      blogs: [],
     };
   }
+}
 
-  const response = await fetch(
-    `https://${username}.substack.com/api/v1/posts?limit=10`
-  );
+export async function fetchDevToPosts(username?: string): Promise<Blogs> {
+  try {
+    if (!username) {
+      throw new Error("Username is required");
+    }
 
-  const data = await response.json();
+    const response = await fetch(
+      `https://dev.to/api/articles?username=${username}&per_page=10`
+    );
 
-  const publication =
-    data?.[0]?.publishedBylines?.[0]?.publicationUsers?.[0]?.publication;
-  const formattedPosts = {
-    publication: {
-      name: publication?.name,
-      logo: "https://substackcdn.com/image/fetch/w_256,c_limit,f_auto,q_auto:good,fl_progressive:steep/"+publication?.logo_url,
-    },
-    posts: data,
-  };
+    const data: DevToResponse = await response.json();
 
-  return formattedPosts || [];
-};
+    const blogs = data?.map((post) => ({
+      title: post.title,
+      url: post.url,
+      coverImage: post.cover_image,
+    }));
+
+    return {
+      publication: {
+        name: "DEV",
+        url: `https://dev.to/${username}`,
+      },
+      blogs,
+    };
+  } catch (error) {
+    console.error("Error fetching DevTo posts:", error);
+    return {
+      publication: {
+        name: "DEV",
+      },
+      blogs: [],
+    };
+  }
+}
+
+export async function fetchSubstackPosts(username?: string): Promise<Blogs> {
+  try {
+    if (!username) {
+      throw new Error("Username is required");
+    }
+
+    const response = await fetch(
+      `https://${username}.substack.com/api/v1/posts?limit=10`
+    );
+
+    const data: SubstackResponse = await response.json();
+
+    const publication = {
+      name: data?.[0]?.publishedBylines?.[0]?.publicationUsers?.[0]?.publication
+        ?.name,
+      logo: "https://substackcdn.com/image/fetch/w_256,c_limit,f_auto,q_auto:good,fl_progressive:steep/"+data?.[0]?.publishedBylines?.[0]?.publicationUsers?.[0]?.publication
+        ?.logo_url,
+      url: `https://${username}.substack.com`,
+    };
+    const blogs = data?.map((post) => ({
+      title: post.title,
+      url: post.canonical_url,
+      coverImage: post.cover_image,
+    }));
+
+    return {
+      publication,
+      blogs,
+    };
+  } catch (error) {
+    console.error("Error fetching Substack posts:", error);
+    return {
+      publication: {
+        name: "Substack",
+      },
+      blogs: [],
+    };
+  }
+}
+
+export async function getBlogs(
+  username: string,
+  type: "medium" | "hashnode" | "devto" | "substack"
+): Promise<Blogs> {
+  switch (type) {
+    case "medium":
+      return await fetchMediumPosts(username);
+    case "hashnode":
+      return await fetchHashnodePosts(username);
+    case "devto":
+      return await fetchDevToPosts(username);
+    case "substack":
+      return await fetchSubstackPosts(username);
+    default:
+      return {
+        publication: null,
+        blogs: [],
+      };
+  }
+}

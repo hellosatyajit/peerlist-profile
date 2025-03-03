@@ -1,0 +1,46 @@
+---
+const { title, url, coverImage, class: className } = Astro.props as {
+  title: string;
+  url: string;
+  coverImage: string;
+  class: string;
+};
+---
+
+<article
+  class={`flex flex-col justify-between flex-1 group border border-border hover:shadow-focus rounded-xl overflow-hidden outline-none focus-within:border-green-100 transition-shadow ${className}`}
+  role="none"
+>
+  <a
+    href={url}
+    target="_blank"
+    rel="noreferrer nofollow ugc"
+    class="outline-none flex flex-col justify-between h-full"
+  >
+    <div
+      class={`relative h-[150px] w-full overflow-hidden ${!coverImage ? "bg-gray-900" : ""}`}
+    >
+      {
+        coverImage ? (
+          <img
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            data-nimg="fill"
+            src={coverImage}
+            style="position: absolute; height: 100%; width: 100%; inset: 0px; object-fit: cover; color: transparent;"
+          />
+        ) : (
+          <p class="text-gray-400 font-normal text-xs break-all paragraph-clamp4">
+            {title}
+          </p>
+        )
+      }
+    </div>
+    <div class="p-4 flex-1 flex flex-col justify-between h-full">
+      <p class="text-gray-1k font-semibold text-sm paragraph-clamp">
+        {title}
+      </p>
+    </div>
+  </a>
+</article>

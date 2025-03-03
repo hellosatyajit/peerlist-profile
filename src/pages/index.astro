@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { fetchUserResume } from "../utils/peerlist";
-import type { PeerlistData } from "../utils/peerlist";
 import { format, differenceInMonths, differenceInYears } from "date-fns";
+import type { PeerlistData } from "../utils/types";
 
 const user = (await fetchUserResume()) as PeerlistData;
 

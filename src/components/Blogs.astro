@@ -1,0 +1,153 @@
+---
+import {
+  DevToIcon,
+  HashnodeIcon,
+  MediumIcon,
+  SubstackIcon,
+} from "../assets/icons";
+import { getBlogs } from "../utils/peerlist";
+import BlogCard from "./BlogCard.astro";
+
+const { username, type } = Astro.props as {
+  username: string;
+  type: "medium" | "hashnode" | "devto" | "substack";
+};
+const data = await getBlogs(username, type);
+
+const socialIcons = {
+  medium: MediumIcon,
+  hashnode: HashnodeIcon,
+  devto: DevToIcon,
+  substack: SubstackIcon,
+};
+
+const Icon = socialIcons[type as keyof typeof socialIcons];
+const showMoreId = `show-more-${type}`;
+---
+
+<div class="mb-20">
+  <section id={type}>
+    <div class="flex items-center justify-between">
+      <a
+        href={data.publication?.url}
+        target="_blank"
+        rel="nofollow noreferrer"
+        class={`outline-none focus:ring-[1px] focus:ring-green-100 rounded ${data.publication?.url ? "hover:underline" : ""}`}
+        tabindex="0"
+      >
+        <div class="flex items-center mr-4">
+          <div class="mr-2 h-auto relative">
+            {
+              type === "substack" && data.publication?.logo ? (
+                <div>
+                  <div class="relative">
+                    <img
+                      alt={data.publication?.name}
+                      loading="lazy"
+                      width="40"
+                      height="40"
+                      decoding="async"
+                      data-nimg="1"
+                      class="rounded-full group-hover:shadow-focus transition-all"
+                      src={data.publication?.logo}
+                      style="color: transparent;"
+                    />
+                    <span class="absolute bottom-0 right-0 w-4 h-4 bg-gray-00 border-2 border-gray-00 ary flex items-center justify-center rounded-full shadow">
+                      <SubstackIcon size="8" />
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <Icon size="24" />
+              )
+            }
+          </div>
+          <p class="text-gray-1k font-semibold text-base">
+            {data.publication?.name}
+          </p>
+        </div>
+      </a>
+      {
+        type === "substack" && data.publication?.url && (
+          <div class="flex items-center">
+            <div class="flex items-center">
+              <a
+                target="_blank"
+                class="outline-none focus-within:border focus:border-green-100 rounded"
+                href={data.publication?.url + "/subscribe"}
+              >
+                <span class="flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 disabled:cursor-not-allowed gap-x-1 active:shadow-none text-xs leading-4 py-1 h-6 rounded-lg px-3 text-gray-00 bg-gray-900 border-gray-1k hover:bg-gray-1k disabled:bg-gray-900">
+                  Subscribe
+                </span>
+              </a>
+            </div>
+          </div>
+        )
+      }
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mt-6">
+      <input type="checkbox" id={showMoreId} class="peer sr-only" />
+      {
+        data.blogs.map((post, index) => (
+          <BlogCard
+            title={post.title}
+            url={post.url}
+            coverImage={post.coverImage}
+            class={index >= 4 ? "hidden peer-checked:block" : ""}
+          />
+        ))
+      }
+    </div>
+    {
+      data.blogs.length > 4 && (
+        <div class="mt-4 flex justify-center items-center">
+          <label
+            for={showMoreId}
+            class="flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 disabled:cursor-not-allowed gap-x-1 active:shadow-none text-xs leading-4 py-1 h-6 rounded-lg px-3 text-gray-1k bg-gray-00 border-gray-200 shadow-5 hover:shadow-10 cursor-pointer"
+          >
+            <span class="">Show More</span>
+            <span class="-mr-1 transition-transform peer-checked:rotate-180">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6 9L12 15L18 9"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+            </span>
+          </label>
+        </div>
+      )
+    }
+  </section>
+</div>
+
+<script define:vars={{ showMoreId }}>
+  const showMoreCheckbox = document.getElementById(showMoreId);
+  const showMoreLabel = document.querySelector(`label[for="${showMoreId}"]`);
+  const firstSpan = showMoreLabel?.querySelector("span:first-child");
+  const arrowIcon = showMoreLabel?.querySelector("span:last-child");
+
+  showMoreCheckbox?.addEventListener("change", function () {
+    if (this.checked) {
+      if (firstSpan) {
+        firstSpan.innerHTML = "Show Less";
+      }
+      arrowIcon?.classList.add("rotate-180");
+    } else {
+      if (firstSpan) {
+        firstSpan.innerHTML = "Show More";
+      }
+      arrowIcon?.classList.remove("rotate-180");
+    }
+  });
+</script>

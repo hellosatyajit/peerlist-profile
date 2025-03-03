@@ -1,5 +1,4 @@
 ---
-import type { PeerlistData } from "../utils/peerlist";
 import {
   TwitterIcon,
   ProductHuntIcon,
@@ -11,8 +10,9 @@ import {
   YoutubeIcon,
   BehanceIcon,
 } from "../assets/icons";
+import type { PeerlistData } from "../utils/types";
 
-const { user }: { user: PeerlistData } = Astro.props as { user: PeerlistData };
+const { user } = Astro.props as { user: PeerlistData };
 
 const socialIcons = {
   Twitter: TwitterIcon,

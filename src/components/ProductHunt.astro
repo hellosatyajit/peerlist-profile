@@ -1,0 +1,70 @@
+---
+import { ProductHuntIcon } from "../assets/icons";
+import { fetchProductHuntProjects } from "../utils/peerlist";
+
+const { username } = Astro.props as { username: string };
+const projects = await fetchProductHuntProjects(username);
+---
+
+<div class="mb-20">
+  <section id="product-hunt">
+    <div class="flex items-center justify-between">
+      <a
+        href={`https://www.producthunt.com/@${username}`}
+        target="_blank"
+        rel="nofollow noreferrer"
+        class="outline-none focus:ring-[1px] focus:ring-green-100 rounded"
+        tabindex="0"
+      >
+        <div class="flex items-center mr-4">
+          <div class="mr-2 h-auto relative">
+            <ProductHuntIcon size="24" />
+          </div>
+          <p class="text-gray-1k font-semibold text-base">Product Hunt</p>
+        </div>
+      </a>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4 mt-6">
+      {
+        projects.map((project) => (
+          <article
+            class="flex flex-col justify-between flex-1 group border border-border hover:shadow-focus rounded-xl overflow-hidden outline-none focus-within:border-green-100 transition-shadow"
+            role="none"
+          >
+            <a
+              href={project.node.url}
+              target="_blank"
+              rel="noreferrer nofollow ugc"
+              class="outline-none flex flex-col h-full w-full"
+            >
+              <article class="p-2">
+                <div class="flex items-center justify-start">
+                  <img
+                    src={project.node.thumbnail.url}
+                    alt={project.node.name}
+                    class="h-16 w-16 rounded bg-cover bg-center"
+                  />
+
+                  <div class="pl-2 flex flex-col w-full">
+                    <p class="text-gray-1k font-semibold text-sm paragraph-clamp1">
+                      {project.node.name}
+                    </p>
+                    <p class="text-xs text-gray-500 mb-2 w-full paragraph-clamp1">
+                      {project.node.tagline}
+                    </p>
+                    <div class="w-fit h-5 flex items-center">
+                      <span class="text-orange">▲</span>
+                      <span class="ml-1 text-xs">
+                        {project.node.votesCount}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </a>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</div>

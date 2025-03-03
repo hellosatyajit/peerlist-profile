@@ -1,7 +1,7 @@
 ---
-import type { PeerlistData } from "../utils/peerlist";
+import type { PeerlistData } from "../utils/types";
 
-const { user }: { user: PeerlistData } = Astro.props as { user: PeerlistData };
+const { user } = Astro.props as { user: PeerlistData };
 ---
 
 <div class="flex flex-col gap-4 py-10 px-4 sm:px-6">

@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { fetchUserCollection } from "../utils/peerlist";
-import type { PeerlistData } from "../utils/peerlist";
 import { formatDistanceToNow, format } from "date-fns";
+import type { PeerlistData } from "../utils/types";
 
 const user = (await fetchUserCollection()) as PeerlistData;
 
